@@ -13,6 +13,7 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
+    "noUncheckedSideEffectImports": false, // hace que no marque el error en el layout.tsx de css
     "plugins": [
       {
         "name": "next"
