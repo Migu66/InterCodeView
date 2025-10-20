@@ -2,20 +2,96 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import DotGrid from "@/components/ui/DotGrid";
-import PrimaryButton from "@/components/basics/PrimaryButton";
+import Toast from "@/components/ui/Toast";
 
 export default function SignUpPage() {
+    const router = useRouter();
     const [formData, setFormData] = useState({
         name: "",
         email: "",
         password: "",
         confirmPassword: "",
     });
+    const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [showToast, setShowToast] = useState(false);
+    const [toastMessage, setToastMessage] = useState("");
+    const [toastType, setToastType] = useState<"success" | "error" | "info">(
+        "success"
+    );
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // TODO: Implementar lógica de registro
+        setError("");
+
+        // Validar que las contraseñas coincidan
+        if (formData.password !== formData.confirmPassword) {
+            setError("Las contraseñas no coinciden");
+            return;
+        }
+
+        // Validar longitud de contraseña
+        if (formData.password.length < 8) {
+            setError("La contraseña debe tener al menos 8 caracteres");
+            return;
+        }
+
+        // Validar que la contraseña contenga mayúsculas, minúsculas y números
+        const hasUpperCase = /[A-Z]/.test(formData.password);
+        const hasLowerCase = /[a-z]/.test(formData.password);
+        const hasNumber = /[0-9]/.test(formData.password);
+
+        if (!hasUpperCase || !hasLowerCase || !hasNumber) {
+            setError(
+                "La contraseña debe contener al menos una mayúscula, una minúscula y un número"
+            );
+            return;
+        }
+
+        setLoading(true);
+
+        try {
+            const response = await fetch("/api/auth/signup", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    name: formData.name,
+                    email: formData.email,
+                    password: formData.password,
+                }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                setError(data.error || "Error al crear la cuenta");
+                return;
+            }
+
+            // Guardar email para poder reenviar el código
+            localStorage.setItem("pendingVerificationEmail", formData.email);
+
+            // Mostrar toast de éxito
+            setToastMessage(
+                "¡Cuenta creada! Revisa tu email para verificar tu cuenta."
+            );
+            setToastType("success");
+            setShowToast(true);
+
+            // Redirigir a la página de verificación
+            setTimeout(() => {
+                router.push("/auth/verify");
+            }, 2000);
+        } catch (err) {
+            console.error("Error:", err);
+            setError("Error al conectar con el servidor");
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -68,8 +144,15 @@ export default function SignUpPage() {
                 </div>
 
                 {/* Form Card */}
-                <div className="bg-gradient-to-br from-gray-900/80 to-gray-800/80 backdrop-blur-xl rounded-2xl p-8 border border-green-500/30 shadow-2xl shadow-green-500/10 animate-fade-in-up animation-delay-50">
+                <div className="bg-gradient-to-br from-gray-900/80 to-gray-800/80 backdrop-blur-xl rounded-2xl p-8 border border-green-500/30 shadow-2xl shadow-green-500/10 animate-fade-in-up">
                     <form onSubmit={handleSubmit} className="space-y-6">
+                        {/* Error Message */}
+                        {error && (
+                            <div className="bg-red-500/10 border border-red-500/50 rounded-lg p-4 text-red-400 text-sm">
+                                {error}
+                            </div>
+                        )}
+
                         {/* Name Input */}
                         <div className="space-y-2">
                             <label
@@ -128,6 +211,7 @@ export default function SignUpPage() {
                                 className="w-full px-4 py-3 bg-black/50 border border-green-500/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition-all"
                                 placeholder="••••••••"
                             />
+                            
                         </div>
 
                         {/* Confirm Password Input */}
@@ -151,12 +235,13 @@ export default function SignUpPage() {
                         </div>
 
                         {/* Submit Button */}
-                        <PrimaryButton
-                            text="Crear cuenta"
-                            href="/auth/signup"
-                            size="lg"
-							className="w-full"
-                        />
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className="w-full px-8 py-4 bg-gradient-to-r from-green-500 to-green-600 text-black font-bold rounded-lg hover:from-green-400 hover:to-green-500 transition-all duration-300 transform hover:scale-105 hover:shadow-xl hover:shadow-green-500/50 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                        >
+                            {loading ? "Creando cuenta..." : "Crear cuenta"}
+                        </button>
                     </form>
 
                     {/* Divider */}
@@ -213,6 +298,15 @@ export default function SignUpPage() {
                     </div>
                 </div>
             </div>
+
+            {/* Toast Notification */}
+            {showToast && (
+                <Toast
+                    message={toastMessage}
+                    type={toastType}
+                    onClose={() => setShowToast(false)}
+                />
+            )}
         </div>
     );
 }
