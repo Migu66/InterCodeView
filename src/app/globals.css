@@ -8,7 +8,8 @@
 /* Grid and Pattern Backgrounds */
 @layer utilities {
     .bg-grid-pattern {
-        background-image: linear-gradient(
+        background-image:
+            linear-gradient(
                 to right,
                 rgba(0, 255, 157, 0.1) 1px,
                 transparent 1px
@@ -22,7 +23,8 @@
     }
 
     .bg-circuit-pattern {
-        background-image: radial-gradient(
+        background-image:
+            radial-gradient(
                 circle at 20% 80%,
                 transparent 0%,
                 transparent 50%,
@@ -55,9 +57,18 @@
                 rgba(0, 255, 157, 0.05) 50%,
                 transparent 100%
             );
-        background-size: 200px 200px, 250px 250px, 150px 150px, 3px 100%,
+        background-size:
+            200px 200px,
+            250px 250px,
+            150px 150px,
+            3px 100%,
             100% 3px;
-        background-position: 0 0, 100% 100%, 50% 50%, 0 0, 0 0;
+        background-position:
+            0 0,
+            100% 100%,
+            50% 50%,
+            0 0,
+            0 0;
     }
 }
 
@@ -495,7 +506,7 @@ html {
     }
 }
 
-/* Toast Animation */
+/* Toast Animations */
 @keyframes slide-in-right {
     0% {
         transform: translateX(100%);
@@ -507,6 +518,48 @@ html {
     }
 }
 
+@keyframes slide-out-right {
+    0% {
+        transform: translateX(0) scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: translateX(120%) scale(0.8);
+        opacity: 0;
+    }
+}
+
+@keyframes progress {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(0);
+    }
+}
+
+@keyframes bounce-subtle {
+    0%,
+    100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
 .animate-slide-in-right {
-    animation: slide-in-right 0.3s ease-out;
+    animation: slide-in-right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.animate-slide-out-right {
+    animation: slide-out-right 0.3s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
+.animate-progress {
+    animation: progress linear;
+}
+
+.animate-bounce-subtle {
+    animation: bounce-subtle 0.6s ease-in-out;
 }

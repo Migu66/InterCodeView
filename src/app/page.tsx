@@ -46,7 +46,6 @@ export default function Home() {
                 </div>
                 <div className="relative z-10 text-center">
                     <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-green-400 mx-auto"></div>
-                    <p className="mt-4 text-green-400">Cargando...</p>
                 </div>
             </div>
         );

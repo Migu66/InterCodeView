@@ -1,5 +1,5 @@
 import AuthGuard from "@/components/AuthGuard";
-import Navbar from "@/components/Navbar";
+import Navbar from "@/components/languages/Navbar";
 
 export default function ProfilePage() {
     return (
