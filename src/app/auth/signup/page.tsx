@@ -1,13 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import DotGrid from "@/components/ui/DotGrid";
 import Toast from "@/components/ui/Toast";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function SignUpPage() {
     const router = useRouter();
+    const { user, loading: authLoading } = useAuth();
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -18,6 +20,13 @@ export default function SignUpPage() {
     const [loading, setLoading] = useState(false);
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState("");
+
+    // Redirigir si ya hay sesión activa
+    useEffect(() => {
+        if (!authLoading && user) {
+            router.push("/languages");
+        }
+    }, [user, authLoading, router]);
     const [toastType, setToastType] = useState<"success" | "error" | "info">(
         "success"
     );
@@ -100,6 +109,31 @@ export default function SignUpPage() {
             [e.target.name]: e.target.value,
         });
     };
+
+    // Mostrar pantalla de carga mientras se verifica la autenticación
+    if (authLoading) {
+        return (
+            <div className="min-h-screen bg-black text-white overflow-hidden relative flex items-center justify-center">
+                <div className="fixed inset-0 z-0">
+                    <DotGrid
+                        dotSize={5}
+                        gap={15}
+                        baseColor="#271e37"
+                        activeColor="#00ff9d"
+                        proximity={100}
+                        shockRadius={180}
+                        shockStrength={2}
+                        resistance={1500}
+                        returnDuration={3}
+                    />
+                </div>
+                <div className="relative z-10 text-center">
+                    <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-green-400 mx-auto"></div>
+                    <p className="mt-4 text-green-400">Verificando sesión...</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-black text-white overflow-hidden relative flex items-center justify-center">
@@ -211,7 +245,6 @@ export default function SignUpPage() {
                                 className="w-full px-4 py-3 bg-black/50 border border-green-500/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition-all"
                                 placeholder="••••••••"
                             />
-                            
                         </div>
 
                         {/* Confirm Password Input */}

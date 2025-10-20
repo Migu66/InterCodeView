@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { ToastContainer } from "@/components/ui/Toast";
+import { AuthProvider } from "@/contexts/AuthContext";
 
 export const metadata: Metadata = {
     title: "InterCodeView",
@@ -28,7 +30,12 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="es">
-            <body>{children}</body>
+            <body>
+                <AuthProvider>
+                    {children}
+                    <ToastContainer />
+                </AuthProvider>
+            </body>
         </html>
     );
 }

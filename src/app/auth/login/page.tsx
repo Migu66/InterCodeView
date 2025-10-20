@@ -1,19 +1,75 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import DotGrid from "@/components/ui/DotGrid";
-import PrimaryButton from "@/components/basics/PrimaryButton";
+import { showToast } from "@/components/ui/Toast";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function LoginPage() {
+    const router = useRouter();
+    const { user, loading, refreshUser } = useAuth();
     const [formData, setFormData] = useState({
         email: "",
         password: "",
     });
+    const [rememberMe, setRememberMe] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+
+    // Redirigir si ya hay sesión activa
+    useEffect(() => {
+        if (!loading && user) {
+            router.push("/languages");
+        }
+    }, [user, loading, router]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // TODO: Implementar lógica de inicio de sesión
+        setIsLoading(true);
+
+        try {
+            const response = await fetch("/api/auth/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    ...formData,
+                    rememberMe,
+                }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                // Login exitoso
+                showToast(data.message || "¡Bienvenido de nuevo!", "success");
+                // Actualizar el contexto de autenticación
+                await refreshUser();
+                // Redirigir al dashboard o página principal
+                router.push("/languages");
+            } else if (response.status === 403 && data.requiresVerification) {
+                // Cuenta no verificada - redirigir a verificación
+                showToast(
+                    data.message ||
+                        "Tu cuenta no está verificada. Revisa tu correo.",
+                    "warning"
+                );
+                // Redirigir a la página de verificación con el email
+                router.push(
+                    `/auth/verify?email=${encodeURIComponent(data.email)}`
+                );
+            } else {
+                // Otros errores
+                showToast(data.error || "Error al iniciar sesión", "error");
+            }
+        } catch (error) {
+            console.error("Error al iniciar sesión:", error);
+            showToast("Error al conectar con el servidor", "error");
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -22,6 +78,31 @@ export default function LoginPage() {
             [e.target.name]: e.target.value,
         });
     };
+
+    // Mostrar pantalla de carga mientras se verifica la autenticación
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-black text-white overflow-hidden relative flex items-center justify-center">
+                <div className="fixed inset-0 z-0">
+                    <DotGrid
+                        dotSize={5}
+                        gap={15}
+                        baseColor="#271e37"
+                        activeColor="#00ff9d"
+                        proximity={100}
+                        shockRadius={180}
+                        shockStrength={2}
+                        resistance={1500}
+                        returnDuration={3}
+                    />
+                </div>
+                <div className="relative z-10 text-center">
+                    <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-green-400 mx-auto"></div>
+                    <p className="mt-4 text-green-400">Verificando sesión...</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-black text-white overflow-hidden relative flex items-center justify-center">
@@ -111,6 +192,10 @@ export default function LoginPage() {
                             <label className="flex items-center gap-2 cursor-pointer group">
                                 <input
                                     type="checkbox"
+                                    checked={rememberMe}
+                                    onChange={(e) =>
+                                        setRememberMe(e.target.checked)
+                                    }
                                     className="w-4 h-4 bg-black/50 border border-green-500/30 rounded focus:ring-2 focus:ring-green-500/20 text-green-500"
                                 />
                                 <span className="text-gray-400 group-hover:text-gray-300 transition-colors">
@@ -126,12 +211,15 @@ export default function LoginPage() {
                         </div>
 
                         {/* Submit Button */}
-                        <PrimaryButton
-                            text="Iniciar sesión"
-                            href="/auth/login"
-                            size="lg"
-                            className="w-full"
-                        />
+                        <button
+                            type="submit"
+                            disabled={isLoading}
+                            className="w-full px-8 py-4 bg-gradient-to-r from-green-400 to-green-600 text-black font-bold rounded-lg hover:from-green-500 hover:to-green-700 transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                        >
+                            {isLoading
+                                ? "Iniciando sesión..."
+                                : "Iniciar sesión"}
+                        </button>
                     </form>
 
                     {/* Divider */}

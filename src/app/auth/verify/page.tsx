@@ -10,8 +10,10 @@ function VerifyContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const tokenFromUrl = searchParams.get("token");
+    const emailFromUrl = searchParams.get("email");
 
     const [token, setToken] = useState(tokenFromUrl || "");
+    const [email, setEmail] = useState(emailFromUrl || "");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const [success, setSuccess] = useState(false);
@@ -20,6 +22,14 @@ function VerifyContent() {
     const [toastType, setToastType] = useState<"success" | "error" | "info">(
         "success"
     );
+
+    // Guardar email en localStorage si viene en la URL
+    useEffect(() => {
+        if (emailFromUrl) {
+            localStorage.setItem("pendingVerificationEmail", emailFromUrl);
+            setEmail(emailFromUrl);
+        }
+    }, [emailFromUrl]);
 
     // Auto-verificar si viene token en la URL
     useEffect(() => {
@@ -206,6 +216,12 @@ function VerifyContent() {
                     <p className="text-xl text-gray-400">
                         Ingresa el código que enviamos a tu correo
                     </p>
+                    {email && (
+                        <p className="text-sm text-green-400 mt-2">
+                            Enviado a:{" "}
+                            <span className="font-semibold">{email}</span>
+                        </p>
+                    )}
                 </div>
 
                 <div className="bg-gradient-to-br from-gray-900/80 to-gray-800/80 backdrop-blur-xl rounded-2xl p-8 border border-green-500/30 shadow-2xl shadow-green-500/10">

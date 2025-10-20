@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import DotGrid from "@/components/ui/DotGrid";
 import AnimatedCodeWindow from "@/components/home/AnimatedCodeWindow";
 import FeaturesSection from "@/components/home/FeaturesSection";
@@ -8,13 +9,48 @@ import LanguagesSection from "@/components/home/LanguagesSection";
 import Footer from "@/components/Footer";
 import PrimaryButton from "@/components/basics/PrimaryButton";
 import SecondaryButton from "@/components/basics/SecondaryButton";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function Home() {
+    const router = useRouter();
+    const { user, loading } = useAuth();
     const [isVisible, setIsVisible] = useState(false);
+
+    // Redirigir si ya hay sesión activa
+    useEffect(() => {
+        if (!loading && user) {
+            router.push("/languages");
+        }
+    }, [user, loading, router]);
 
     useEffect(() => {
         setIsVisible(true);
     }, []);
+
+    // Mostrar pantalla de carga mientras se verifica la autenticación
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-black text-white overflow-hidden relative flex items-center justify-center">
+                <div className="fixed inset-0 z-0">
+                    <DotGrid
+                        dotSize={5}
+                        gap={15}
+                        baseColor="#271e37"
+                        activeColor="#00ff9d"
+                        proximity={100}
+                        shockRadius={180}
+                        shockStrength={2}
+                        resistance={1500}
+                        returnDuration={3}
+                    />
+                </div>
+                <div className="relative z-10 text-center">
+                    <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-green-400 mx-auto"></div>
+                    <p className="mt-4 text-green-400">Cargando...</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-black text-white overflow-hidden relative">
