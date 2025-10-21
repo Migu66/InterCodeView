@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import DotGrid from "@/components/ui/DotGrid";
 import { showToast } from "@/components/ui/Toast";
 import { useAuth } from "@/contexts/AuthContext";
+import PasswordToggleButton from "@/components/ui/PasswordToggleButton";
 
 export default function LoginPage() {
     const router = useRouter();
@@ -16,6 +17,7 @@ export default function LoginPage() {
     });
     const [rememberMe, setRememberMe] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
     // Redirigir si ya hay sesión activa
     useEffect(() => {
@@ -175,16 +177,24 @@ export default function LoginPage() {
                             >
                                 Contraseña
                             </label>
-                            <input
-                                id="password"
-                                name="password"
-                                type="password"
-                                required
-                                value={formData.password}
-                                onChange={handleChange}
-                                className="w-full px-4 py-3 bg-black/50 border border-green-500/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition-all"
-                                placeholder="••••••••"
-                            />
+                            <div className="relative">
+                                <input
+                                    id="password"
+                                    name="password"
+                                    type={showPassword ? "text" : "password"}
+                                    required
+                                    value={formData.password}
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-3 bg-black/50 border border-green-500/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition-all pr-12"
+                                    placeholder="••••••••"
+                                />
+                                <PasswordToggleButton
+                                    showPassword={showPassword}
+                                    onToggle={() =>
+                                        setShowPassword(!showPassword)
+                                    }
+                                />
+                            </div>
                         </div>
 
                         {/* Remember me & Forgot password */}
@@ -214,7 +224,7 @@ export default function LoginPage() {
                         <button
                             type="submit"
                             disabled={isLoading}
-                            className="w-full px-8 py-4 bg-gradient-to-r from-green-400 to-green-600 text-black font-bold rounded-lg hover:from-green-500 hover:to-green-700 transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                            className="w-full px-8 py-4 bg-gradient-to-r from-green-400 to-green-600 text-black font-bold rounded-lg hover:from-green-500 hover:to-green-700 transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 cursor-pointer"
                         >
                             {isLoading
                                 ? "Iniciando sesión..."
@@ -236,7 +246,7 @@ export default function LoginPage() {
 
                     {/* Social Login Buttons */}
                     <div className="space-y-3">
-                        <button className="w-full px-6 py-3 bg-black/50 border border-green-500/30 rounded-lg text-white hover:border-green-500 hover:bg-green-500/10 transition-all duration-300 flex items-center justify-center gap-3">
+                        <button className="w-full px-6 py-3 bg-black/50 border border-green-500/30 rounded-lg text-white hover:border-green-500 hover:bg-green-500/10 transition-all duration-300 flex items-center justify-center gap-3 cursor-pointer">
                             <svg
                                 className="w-5 h-5"
                                 fill="currentColor"
@@ -247,7 +257,7 @@ export default function LoginPage() {
                             Continuar con GitHub
                         </button>
 
-                        <button className="w-full px-6 py-3 bg-black/50 border border-green-500/30 rounded-lg text-white hover:border-green-500 hover:bg-green-500/10 transition-all duration-300 flex items-center justify-center gap-3">
+                        <button className="w-full px-6 py-3 bg-black/50 border border-green-500/30 rounded-lg text-white hover:border-green-500 hover:bg-green-500/10 transition-all duration-300 flex items-center justify-center gap-3 cursor-pointer">
                             <svg
                                 className="w-5 h-5"
                                 fill="currentColor"

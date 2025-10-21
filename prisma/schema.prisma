@@ -15,15 +15,17 @@ datasource db {
 }
 
 model User {
-    id                String    @id @default(cuid())
-    name              String
-    email             String    @unique
-    password          String
-    emailVerified     Boolean   @default(false)
-    verificationToken String?
-    tokenExpiry       DateTime?
-    createdAt         DateTime  @default(now())
-    updatedAt         DateTime  @updatedAt
+    id                   String    @id @default(cuid())
+    name                 String
+    email                String    @unique
+    password             String
+    emailVerified        Boolean   @default(false)
+    verificationToken    String?
+    tokenExpiry          DateTime?
+    resetPasswordToken   String?
+    resetPasswordExpiry  DateTime?
+    createdAt            DateTime  @default(now())
+    updatedAt            DateTime  @updatedAt
 
     @@map("users")
 }

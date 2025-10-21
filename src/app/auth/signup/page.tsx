@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import DotGrid from "@/components/ui/DotGrid";
 import Toast from "@/components/ui/Toast";
 import { useAuth } from "@/contexts/AuthContext";
+import PasswordToggleButton from "@/components/ui/PasswordToggleButton";
 
 export default function SignUpPage() {
     const router = useRouter();
@@ -20,6 +21,8 @@ export default function SignUpPage() {
     const [loading, setLoading] = useState(false);
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     // Redirigir si ya hay sesión activa
     useEffect(() => {
@@ -235,16 +238,24 @@ export default function SignUpPage() {
                             >
                                 Contraseña
                             </label>
-                            <input
-                                id="password"
-                                name="password"
-                                type="password"
-                                required
-                                value={formData.password}
-                                onChange={handleChange}
-                                className="w-full px-4 py-3 bg-black/50 border border-green-500/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition-all"
-                                placeholder="••••••••"
-                            />
+                            <div className="relative">
+                                <input
+                                    id="password"
+                                    name="password"
+                                    type={showPassword ? "text" : "password"}
+                                    required
+                                    value={formData.password}
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-3 bg-black/50 border border-green-500/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition-all pr-12"
+                                    placeholder="••••••••"
+                                />
+                                <PasswordToggleButton
+                                    showPassword={showPassword}
+                                    onToggle={() =>
+                                        setShowPassword(!showPassword)
+                                    }
+                                />
+                            </div>
                         </div>
 
                         {/* Confirm Password Input */}
@@ -255,16 +266,30 @@ export default function SignUpPage() {
                             >
                                 Confirmar contraseña
                             </label>
-                            <input
-                                id="confirmPassword"
-                                name="confirmPassword"
-                                type="password"
-                                required
-                                value={formData.confirmPassword}
-                                onChange={handleChange}
-                                className="w-full px-4 py-3 bg-black/50 border border-green-500/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition-all"
-                                placeholder="••••••••"
-                            />
+                            <div className="relative">
+                                <input
+                                    id="confirmPassword"
+                                    name="confirmPassword"
+                                    type={
+                                        showConfirmPassword
+                                            ? "text"
+                                            : "password"
+                                    }
+                                    required
+                                    value={formData.confirmPassword}
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-3 bg-black/50 border border-green-500/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition-all pr-12"
+                                    placeholder="••••••••"
+                                />
+                                <PasswordToggleButton
+                                    showPassword={showConfirmPassword}
+                                    onToggle={() =>
+                                        setShowConfirmPassword(
+                                            !showConfirmPassword
+                                        )
+                                    }
+                                />
+                            </div>
                         </div>
 
                         {/* Submit Button */}
