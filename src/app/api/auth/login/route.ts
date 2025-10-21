@@ -79,6 +79,7 @@ export async function POST(req: NextRequest) {
                 id: user.id,
                 name: user.name,
                 email: user.email,
+                avatarUrl: user.avatarUrl,
             },
             rememberMe
         );
@@ -93,6 +94,7 @@ export async function POST(req: NextRequest) {
                     id: user.id,
                     name: user.name,
                     email: user.email,
+                    avatarUrl: user.avatarUrl,
                 },
             },
             { status: 200 }

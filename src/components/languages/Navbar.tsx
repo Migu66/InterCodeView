@@ -77,10 +77,18 @@ export default function Navbar() {
                                 className="group flex items-center gap-3 px-4 py-2.5 rounded-xl bg-green-500/5 hover:bg-green-500/15 border border-green-500/20 hover:border-green-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-green-500/20"
                             >
                                 <div className="relative">
-                                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-green-400 via-emerald-500 to-green-600 flex items-center justify-center text-black font-bold shadow-lg shadow-green-500/30 group-hover:shadow-green-500/60 transition-all duration-300 group-hover:scale-110 group-hover:rotate-6">
-                                        {user.name?.charAt(0).toUpperCase()}
+                                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-green-400 via-emerald-500 to-green-600 flex items-center justify-center text-black font-bold shadow-lg shadow-green-500/30 group-hover:shadow-green-500/60 transition-all duration-300 group-hover:scale-110 group-hover:rotate-6 overflow-hidden">
+                                        {user.avatarUrl ? (
+                                            // eslint-disable-next-line @next/next/no-img-element
+                                            <img
+                                                src={user.avatarUrl}
+                                                alt={user.name}
+                                                className="w-full h-full object-cover"
+                                            />
+                                        ) : (
+                                            user.name?.charAt(0).toUpperCase()
+                                        )}
                                     </div>
-                                    <div className="absolute inset-0 rounded-full bg-green-400 blur opacity-0 group-hover:opacity-50 transition-opacity duration-300 animate-pulse" />
                                 </div>
                                 <div className="text-left hidden md:block">
                                     <p className="text-sm font-semibold text-green-400 leading-tight group-hover:text-green-300 transition-colors duration-300">

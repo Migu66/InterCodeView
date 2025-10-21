@@ -7,6 +7,7 @@ export interface UserPayload {
     id: string;
     email: string;
     name: string;
+    avatarUrl?: string | null;
 }
 
 // Generar token JWT

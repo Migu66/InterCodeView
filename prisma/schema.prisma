@@ -15,17 +15,18 @@ datasource db {
 }
 
 model User {
-    id                   String    @id @default(cuid())
-    name                 String
-    email                String    @unique
-    password             String
-    emailVerified        Boolean   @default(false)
-    verificationToken    String?
-    tokenExpiry          DateTime?
-    resetPasswordToken   String?
-    resetPasswordExpiry  DateTime?
-    createdAt            DateTime  @default(now())
-    updatedAt            DateTime  @updatedAt
+    id                   String    @id @default(cuid()) // identificador único del usuario
+    name                 String							// nombre del usuario
+    email                String    @unique				// correo electrónico del usuario
+    password             String							// contraseña del usuario (hashed)
+    avatarUrl            String?						// URL del avatar del usuario
+    emailVerified        Boolean   @default(false)		// indica si el correo electrónico ha sido verificado
+    verificationToken    String?						// token para la verificación del correo electrónico
+    tokenExpiry          DateTime?						// fecha de expiración del token de verificación
+    resetPasswordToken   String?						// token para restablecer la contraseña
+    resetPasswordExpiry  DateTime?						// fecha de expiración del token de restablecimiento de contraseña
+    createdAt            DateTime  @default(now())		// fecha de creación del usuario
+    updatedAt            DateTime  @updatedAt			// fecha de última actualización del usuario
 
     @@map("users")
 }

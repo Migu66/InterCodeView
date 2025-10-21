@@ -38,6 +38,17 @@ export default function SignUpPage() {
         e.preventDefault();
         setError("");
 
+        // Validar nombre
+        if (!formData.name.trim()) {
+            setError("El nombre es requerido");
+            return;
+        }
+
+        if (formData.name.length > 50) {
+            setError("El nombre no puede tener más de 50 caracteres");
+            return;
+        }
+
         // Validar que las contraseñas coincidan
         if (formData.password !== formData.confirmPassword) {
             setError("Las contraseñas no coinciden");
@@ -192,20 +203,28 @@ export default function SignUpPage() {
 
                         {/* Name Input */}
                         <div className="space-y-2">
-                            <label
-                                htmlFor="name"
-                                className="block text-sm font-semibold text-green-400"
-                            >
-                                Nombre completo
-                            </label>
+                            <div className="flex items-center justify-between">
+                                <label
+                                    htmlFor="name"
+                                    className="block text-sm font-semibold text-green-400"
+                                >
+                                    Nombre completo
+                                </label>
+                                <span
+                                    className={`text-xs ${formData.name.length > 50 ? "text-red-400" : "text-gray-500"}`}
+                                >
+                                    {formData.name.length}/50
+                                </span>
+                            </div>
                             <input
                                 id="name"
                                 name="name"
                                 type="text"
                                 required
+                                maxLength={50}
                                 value={formData.name}
                                 onChange={handleChange}
-                                className="w-full px-4 py-3 bg-black/50 border border-green-500/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition-all"
+                                className={`w-full px-4 py-3 bg-black/50 border rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 transition-all ${formData.name.length > 50 ? "border-red-500 focus:border-red-500 focus:ring-red-500/20" : "border-green-500/30 focus:border-green-500 focus:ring-green-500/20"}`}
                                 placeholder="Tu nombre"
                             />
                         </div>

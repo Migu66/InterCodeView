@@ -18,6 +18,21 @@ export async function POST(request: NextRequest) {
             );
         }
 
+        // Validar longitud del nombre
+        if (name.trim().length === 0) {
+            return NextResponse.json(
+                { error: "El nombre no puede estar vacío" },
+                { status: 400 }
+            );
+        }
+
+        if (name.length > 50) {
+            return NextResponse.json(
+                { error: "El nombre no puede tener más de 50 caracteres" },
+                { status: 400 }
+            );
+        }
+
         // Validar formato de email
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
