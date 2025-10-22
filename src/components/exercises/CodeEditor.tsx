@@ -10,6 +10,7 @@ interface CodeEditorProps {
     onChange: (value: string | undefined) => void;
     onRun?: () => void;
     isRunning?: boolean;
+    isTerminalVisible?: boolean;
 }
 
 const languageMap: { [key: string]: string } = {
@@ -27,6 +28,7 @@ export default function CodeEditor({
     onChange,
     onRun,
     isRunning = false,
+    isTerminalVisible = true,
 }: CodeEditorProps) {
     const [isFullscreen, setIsFullscreen] = useState(false);
     const monacoLanguage = languageMap[language] || "javascript";
@@ -35,9 +37,14 @@ export default function CodeEditor({
         setIsFullscreen(!isFullscreen);
     };
 
+    // Calcular altura dinámica basada en si el terminal está visible
+    const editorHeight = isTerminalVisible
+        ? "h-[calc(100vh-680px)]"
+        : "h-[calc(102.5vh-385px)]";
+
     return (
         <div
-            className={`flex flex-col ${isFullscreen ? "fixed inset-0 z-50 bg-black" : "h-[calc(100vh-580px)] min-h-[400px]"}`}
+            className={`flex flex-col transition-all duration-300 ${isFullscreen ? "fixed inset-0 z-50 bg-black" : `${editorHeight} min-h-[400px]`}`}
         >
             {/* Editor Header */}
             <div className="bg-[#1e1e1e] border border-gray-800 rounded-t-lg px-4 py-3 flex items-center justify-between">

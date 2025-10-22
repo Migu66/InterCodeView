@@ -29,7 +29,7 @@ export default function TerminalOutput({
 
     return (
         <div
-            className={`${isVisible ? "h-73" : "h-10"} transition-all duration-300 border border-gray-800 rounded-lg bg-[#0d0d0d] overflow-hidden`}
+            className={`${isVisible ? "h-60" : "h-10"} transition-all duration-300 border border-gray-800 rounded-lg bg-[#0d0d0d] overflow-hidden`}
         >
             {/* Terminal Header */}
             <div className="bg-[#1a1a1a] border-b border-gray-800 px-4 py-2 flex items-center justify-between">

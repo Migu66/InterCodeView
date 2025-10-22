@@ -349,7 +349,7 @@ export default function ExercisePage() {
                                 onClick={() =>
                                     router.push(`/languages/${languageId}`)
                                 }
-                                className="flex items-center gap-2 text-gray-400 hover:text-[#00ff9d] transition-colors mb-6"
+                                className="flex items-center gap-2 text-gray-400 hover:text-[#00ff9d] transition-colors mb-6 mt-5"
                             >
                                 <FiArrowLeft size={20} />
                                 <span>Volver a {language.name}</span>
@@ -362,7 +362,7 @@ export default function ExercisePage() {
                                     </h1>
                                     <div className="flex items-center gap-4">
                                         <span
-                                            className={`text-sm font-semibold ${getDifficultyColor(exercise.difficulty)}`}
+                                            className={`text-sm font-semibold ml-2 mt-1 ${getDifficultyColor(exercise.difficulty)}`}
                                         >
                                             {getDifficultyText(
                                                 exercise.difficulty
@@ -399,15 +399,17 @@ export default function ExercisePage() {
                     {/* Main Content - Split View */}
                     <div className="px-6 pb-12">
                         <div className="max-w-[1800px] mx-auto">
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                {/* Left Panel - Exercise Statement */}
-                                <ExerciseStatement
-                                    description={exercise.description}
-                                    difficulty={exercise.difficulty}
-                                />
+                            <div className="grid grid-cols-1 lg:grid-cols-10 gap-6">
+                                {/* Left Panel - Exercise Statement (2/5 = 40%) */}
+                                <div className="lg:col-span-3">
+                                    <ExerciseStatement
+                                        description={exercise.description}
+                                        difficulty={exercise.difficulty}
+                                    />
+                                </div>
 
-                                {/* Right Panel - Code Editor y Terminal */}
-                                <div className="space-y-4">
+                                {/* Right Panel - Code Editor y Terminal (3/5 = 60%) */}
+                                <div className="lg:col-span-7 space-y-4">
                                     {/* Code Editor */}
                                     <CodeEditor
                                         language={language.slug}
@@ -415,6 +417,7 @@ export default function ExercisePage() {
                                         onChange={handleCodeChange}
                                         onRun={handleRunCode}
                                         isRunning={isRunning}
+                                        isTerminalVisible={isTerminalVisible}
                                     />
 
                                     {/* Terminal Output */}

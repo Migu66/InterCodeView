@@ -52,7 +52,7 @@ export default function ExerciseStatement({
     const Icon = config.icon;
 
     return (
-        <div className="h-[calc(100vh-250px)] flex flex-col">
+        <div className="h-[calc(100vh-305px)] flex flex-col">
             {/* Statement Header */}
             <div className="bg-[#1a1a1a] border border-gray-800 rounded-t-lg px-4 py-3 flex items-center gap-2">
                 <FiBook className="text-[#00ff9d]" size={20} />
@@ -109,7 +109,7 @@ export default function ExerciseStatement({
                     </h3>
                     <ul className="text-gray-400 text-sm space-y-1 list-disc list-inside">
                         <li>Lee cuidadosamente el enunciado</li>
-						<li>Planifica tu solución antes de codificar</li>
+                        <li>Planifica tu solución antes de codificar</li>
                         <li>Optimiza tu solución si es posible</li>
                     </ul>
                 </div>
