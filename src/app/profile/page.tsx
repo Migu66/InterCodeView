@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import AuthGuard from "@/components/AuthGuard";
-import Navbar from "@/components/languages/Navbar";
+import Navbar from "@/components/ui/Navbar";
 import { useAuth } from "@/contexts/AuthContext";
 import Toast from "@/components/ui/Toast";
 import DotGrid from "@/components/ui/DotGrid";

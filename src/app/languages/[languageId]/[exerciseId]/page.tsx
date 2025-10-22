@@ -1,5 +1,5 @@
 import AuthGuard from "@/components/AuthGuard";
-import Navbar from "@/components/languages/Navbar";
+import Navbar from "@/components/ui/Navbar";
 
 export default function ExercisePage() {
     return (
