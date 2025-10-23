@@ -112,7 +112,6 @@ async function main() {
             create: lang,
         });
         createdLanguages.push(language);
-        console.log(`✅ Lenguaje creado: ${language.name}`);
     }
 
     // Crear ejercicios de ejemplo para Python
@@ -650,9 +649,6 @@ def saludar(nombre):
                 data: exercise,
             });
         }
-        console.log(
-            `✅ ${pythonExercises.length} ejercicios creados para Python`
-        );
     }
 
     // Crear ejercicios de ejemplo para JavaScript
@@ -920,12 +916,8 @@ const miPerro = new Perro("Max", "Labrador")`,
                 data: exercise,
             });
         }
-        console.log(
-            `✅ ${jsExercises.length} ejercicios creados para JavaScript`
-        );
     }
 
-    console.log("✨ Seed completado exitosamente!");
 }
 
 main()

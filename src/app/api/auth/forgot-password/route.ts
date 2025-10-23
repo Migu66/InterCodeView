@@ -54,7 +54,6 @@ export async function POST(request: NextRequest) {
         );
 
         if (!emailResult.success) {
-            console.error("Error al enviar email:", emailResult.error);
             return NextResponse.json(
                 {
                     error: "Error al enviar el correo. Por favor, intenta de nuevo.",

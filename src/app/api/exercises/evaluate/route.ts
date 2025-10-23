@@ -11,12 +11,6 @@ export async function POST(request: NextRequest) {
         const { code, exerciseStatement, language, starterCode } =
             await request.json();
 
-        console.log("📝 Evaluando código:");
-        console.log("- Lenguaje:", language);
-        console.log("- Código:", code);
-        console.log("- Código inicial:", starterCode);
-        console.log("- API Key presente:", !!process.env.GROQ_API_KEY);
-
         if (!code || !exerciseStatement || !language) {
             return NextResponse.json(
                 { error: "Faltan parámetros requeridos" },
@@ -73,8 +67,6 @@ export async function POST(request: NextRequest) {
             language
         );
 
-        console.log("✅ Evaluación exitosa:", evaluation);
-
         return NextResponse.json(evaluation);
     } catch (error) {
         console.error("❌ Error al evaluar código:", error);
@@ -92,8 +84,6 @@ async function evaluateCodeWithAI(
 ) {
     // Evaluar con Groq (Llama 3.1 - Gratis y Rápido)
     try {
-        console.log("🤖 Llamando a Groq API...");
-
         const prompt = `Eres un profesor experto en programación. Evalúa el código del estudiante de forma ESPECÍFICA y CONTEXTUAL.
 
 EJERCICIO:
@@ -193,7 +183,6 @@ CRÍTICO: NO des sugerencias genéricas. Si el código es perfecto para el ejerc
 
         const responseText =
             chatCompletion.choices[0]?.message?.content || "{}";
-        console.log("📄 Respuesta de Groq:", responseText);
 
         const result = JSON.parse(responseText);
 

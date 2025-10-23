@@ -110,9 +110,11 @@ export async function POST(request: NextRequest) {
         );
 
         if (!emailResult.success) {
-            console.error("Error al enviar email de verificación");
-            // Continuar aunque el email falle
-        }
+			return NextResponse.json(
+				{ error: "Error al enviar el email de verificación. Por favor, intenta de nuevo." },
+				{ status: 500 }
+			);
+		}
 
         return NextResponse.json(
             {

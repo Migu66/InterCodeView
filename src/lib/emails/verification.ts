@@ -63,12 +63,9 @@ export async function sendVerificationEmail(
         });
 
         if (error) {
-            console.error("Error al enviar email de verificación:", error);
             return { success: false, error };
         }
-
-        console.log("Email de verificación enviado a:", email);
-        console.log("Resend response:", data);
+		
         return { success: true, data };
     } catch (error) {
         console.error("Error al enviar email de verificación:", error);

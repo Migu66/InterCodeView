@@ -67,12 +67,9 @@ export async function sendPasswordResetEmail(
         });
 
         if (error) {
-            console.error("Error al enviar email de reset:", error);
             return { success: false, error };
         }
 
-        console.log("Email de reset enviado a:", email);
-        console.log("Resend response:", data);
         return { success: true, data };
     } catch (error) {
         console.error("Error al enviar email de reset:", error);
