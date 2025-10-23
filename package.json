@@ -24,6 +24,7 @@
         "cloudinary": "^2.8.0",
         "clsx": "^2.1.1",
         "cookie": "^1.0.2",
+        "groq-sdk": "^0.34.0",
         "gsap": "^3.13.0",
         "jsonwebtoken": "^9.0.2",
         "lucide-react": "^0.546.0",
@@ -34,6 +35,8 @@
         "react": "19.1.0",
         "react-dom": "19.1.0",
         "react-icons": "^5.5.0",
+        "react-markdown": "^10.1.0",
+        "remark-gfm": "^4.0.1",
         "resend": "^6.2.0",
         "tailwind-merge": "^3.3.1",
         "three": "^0.180.0"

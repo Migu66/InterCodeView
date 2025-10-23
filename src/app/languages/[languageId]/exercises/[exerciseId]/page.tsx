@@ -9,6 +9,8 @@ import {
     CodeEditor,
     ExerciseStatement,
     TerminalOutput,
+    SuccessAnimation,
+    EvaluationFeedback,
 } from "@/components/exercises";
 import { FiArrowLeft, FiCheck } from "react-icons/fi";
 
@@ -16,8 +18,10 @@ interface Exercise {
     id: string;
     title: string;
     description: string;
+    statement: string;
     difficulty: "EASY" | "MEDIUM" | "HARD";
     languageId: string;
+    starterCode?: string | null;
 }
 
 interface Language {
@@ -26,6 +30,16 @@ interface Language {
     slug: string;
     color: string;
     icon?: string | null;
+}
+
+interface EvaluationResult {
+    success: boolean;
+    status: "perfect" | "good" | "needs_improvement";
+    message: string;
+    score: number;
+    feedback: string;
+    isPerfect: boolean;
+    suggestions: string[];
 }
 
 export default function ExercisePage() {
@@ -45,6 +59,13 @@ export default function ExercisePage() {
     const [terminalOutput, setTerminalOutput] = useState<string>("");
     const [isRunning, setIsRunning] = useState(false);
     const [isTerminalVisible, setIsTerminalVisible] = useState(true);
+
+    // Estados para evaluación con IA
+    const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
+    const [evaluationResult, setEvaluationResult] =
+        useState<EvaluationResult | null>(null);
+    const [evaluationScore, setEvaluationScore] = useState(0);
+    const [evaluationKey, setEvaluationKey] = useState(0); // Para forzar re-render
 
     useEffect(() => {
         const fetchExercise = async () => {
@@ -94,8 +115,11 @@ export default function ExercisePage() {
                 const languageData = await languageResponse.json();
                 setLanguage(languageData);
 
-                // Set initial code based on language
-                setCode(getInitialCode(languageData.slug));
+                // Set initial code: usar starterCode si existe, sino usar plantilla por defecto
+                const initialCode =
+                    exerciseData.starterCode ||
+                    getInitialCode(languageData.slug);
+                setCode(initialCode);
             } catch (err) {
                 console.error("Error completo:", err);
                 setError(
@@ -210,14 +234,66 @@ export default function ExercisePage() {
     };
 
     const handleSubmit = async () => {
+        if (!exercise || !language) return;
+
         setIsSubmitting(true);
 
-        // TODO: Implementar la lógica de envío
-        setTimeout(() => {
-            console.log("Código enviado:", code);
+        // Limpiar el resultado anterior para mostrar la nueva evaluación
+        setEvaluationResult(null);
+        setShowSuccessAnimation(false);
+
+        try {
+            // Llamar al API de evaluación
+            const response = await fetch("/api/exercises/evaluate", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    code,
+                    exerciseStatement: exercise.statement,
+                    language: language.slug,
+                    starterCode: exercise.starterCode || "",
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error("Error al evaluar el código");
+            }
+
+            const result = await response.json();
+
+            // Actualizar el resultado con una nueva key para forzar re-render
+            setEvaluationKey((prev) => prev + 1);
+            setEvaluationResult(result);
+            setEvaluationScore(result.score);
+
+            // Si es perfecto, mostrar animación
+            if (result.isPerfect) {
+                setTimeout(() => {
+                    setShowSuccessAnimation(true);
+                }, 500);
+            }
+        } catch (err) {
+            console.error("Error al evaluar:", err);
+            // Mostrar error en el EvaluationFeedback
+            setEvaluationResult({
+                success: false,
+                status: "needs_improvement",
+                message: "Error al evaluar el código",
+                score: 0,
+                feedback:
+                    "**Error:**\nNo se pudo evaluar el código. " +
+                    (err instanceof Error ? err.message : "Error desconocido"),
+                isPerfect: false,
+                suggestions: [
+                    "Verifica tu conexión a internet",
+                    "Intenta nuevamente",
+                ],
+            });
+        } finally {
             setIsSubmitting(false);
-            // Aquí irá la lógica de validación del ejercicio
-        }, 1500);
+        }
     };
 
     const getDifficultyColor = (difficulty: string) => {
@@ -403,7 +479,7 @@ export default function ExercisePage() {
                                 {/* Left Panel - Exercise Statement (2/5 = 40%) */}
                                 <div className="lg:col-span-3">
                                     <ExerciseStatement
-                                        description={exercise.description}
+                                        description={exercise.statement}
                                         difficulty={exercise.difficulty}
                                     />
                                 </div>
@@ -420,6 +496,20 @@ export default function ExercisePage() {
                                         isTerminalVisible={isTerminalVisible}
                                     />
 
+                                    {/* Evaluation Feedback */}
+                                    {evaluationResult && (
+                                        <EvaluationFeedback
+                                            key={evaluationKey}
+                                            status={evaluationResult.status}
+                                            message={evaluationResult.message}
+                                            score={evaluationResult.score}
+                                            feedback={evaluationResult.feedback}
+                                            suggestions={
+                                                evaluationResult.suggestions
+                                            }
+                                        />
+                                    )}
+
                                     {/* Terminal Output */}
                                     <TerminalOutput
                                         output={terminalOutput}
@@ -433,6 +523,14 @@ export default function ExercisePage() {
                         </div>
                     </div>
                 </div>
+
+                {/* Success Animation */}
+                {showSuccessAnimation && (
+                    <SuccessAnimation
+                        score={evaluationScore}
+                        onComplete={() => setShowSuccessAnimation(false)}
+                    />
+                )}
             </div>
         </AuthGuard>
     );

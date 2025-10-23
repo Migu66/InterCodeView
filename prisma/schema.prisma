@@ -44,6 +44,8 @@ model Exercise {
   id          String     @id @default(cuid())
   title       String
   description String
+  statement   String
+  starterCode String?
   difficulty  Difficulty
   languageId  String
   order       Int        @default(0)

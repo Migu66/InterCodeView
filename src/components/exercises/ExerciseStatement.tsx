@@ -1,6 +1,8 @@
 "use client";
 
 import { FiBook, FiAlertCircle, FiCheckCircle } from "react-icons/fi";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 interface ExerciseStatementProps {
     description: string;
@@ -78,17 +80,14 @@ export default function ExerciseStatement({
                 </div>
 
                 {/* Description */}
-                <div className="prose prose-invert max-w-none">
-                    <div
-                        className="text-gray-300 leading-relaxed whitespace-pre-wrap"
-                        dangerouslySetInnerHTML={{
-                            __html: formatDescription(description),
-                        }}
-                    />
+                <div className="prose prose-invert max-w-none markdown-content">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                        {description || "Sin enunciado disponible"}
+                    </ReactMarkdown>
                 </div>
 
                 {/* Example Section (si existe en la descripción) */}
-                {description.includes("Ejemplo") && (
+                {description && description.includes("Ejemplo") && (
                     <div className="mt-6 p-4 bg-[#1a1a1a] border border-gray-800 rounded-lg">
                         <h3 className="text-[#00ff9d] font-semibold mb-2 flex items-center gap-2">
                             <span>📝</span>
@@ -115,7 +114,7 @@ export default function ExerciseStatement({
                 </div>
             </div>
 
-            <style jsx>{`
+            <style jsx global>{`
                 .custom-scrollbar::-webkit-scrollbar {
                     width: 8px;
                 }
@@ -129,18 +128,82 @@ export default function ExerciseStatement({
                 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
                     background: #444;
                 }
+
+                /* Estilos para el contenido markdown */
+                .markdown-content {
+                    color: #d1d5db;
+                    line-height: 1.75;
+                }
+
+                .markdown-content h2 {
+                    color: #00ff9d;
+                    font-size: 1.25rem;
+                    font-weight: 700;
+                    margin-top: 1.5rem;
+                    margin-bottom: 1rem;
+                }
+
+                .markdown-content h3 {
+                    color: #00ff9d;
+                    font-size: 1.1rem;
+                    font-weight: 600;
+                    margin-top: 1.25rem;
+                    margin-bottom: 0.75rem;
+                }
+
+                .markdown-content p {
+                    margin-bottom: 1rem;
+                    color: #d1d5db;
+                }
+
+                .markdown-content code {
+                    background-color: #1a1a1a;
+                    color: #00ff9d;
+                    padding: 0.125rem 0.375rem;
+                    border-radius: 0.25rem;
+                    font-size: 0.875rem;
+                    font-family: "Courier New", monospace;
+                }
+
+                .markdown-content pre {
+                    background-color: #0d0d0d;
+                    border: 1px solid #333;
+                    border-radius: 0.5rem;
+                    padding: 1rem;
+                    overflow-x: auto;
+                    margin: 1rem 0;
+                }
+
+                .markdown-content pre code {
+                    background-color: transparent;
+                    padding: 0;
+                    color: #d1d5db;
+                }
+
+                .markdown-content ul {
+                    list-style: disc;
+                    padding-left: 1.5rem;
+                    margin-bottom: 1rem;
+                }
+
+                .markdown-content li {
+                    margin-bottom: 0.5rem;
+                    color: #d1d5db;
+                }
+
+                .markdown-content strong {
+                    color: white;
+                    font-weight: 700;
+                }
+
+                .markdown-content blockquote {
+                    border-left: 4px solid #00ff9d;
+                    padding-left: 1rem;
+                    color: #9ca3af;
+                    font-style: italic;
+                    margin: 1rem 0;
+                }
             `}</style>
         </div>
     );
-}
-
-// Función auxiliar para formatear la descripción con HTML básico
-function formatDescription(description: string): string {
-    return description
-        .replace(/\*\*(.*?)\*\*/g, '<strong class="text-white">$1</strong>')
-        .replace(/\n/g, "<br />")
-        .replace(
-            /`(.*?)`/g,
-            '<code class="bg-gray-800 px-2 py-1 rounded text-[#00ff9d] text-sm">$1</code>'
-        );
 }
