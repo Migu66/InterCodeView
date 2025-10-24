@@ -7,6 +7,7 @@ import DotGrid from "@/components/ui/DotGrid";
 import { showToast } from "@/components/ui/Toast";
 import { useAuth } from "@/contexts/AuthContext";
 import PasswordToggleButton from "@/components/ui/PasswordToggleButton";
+import { signIn } from "next-auth/react";
 
 export default function LoginPage() {
     const router = useRouter();
@@ -26,45 +27,57 @@ export default function LoginPage() {
         }
     }, [user, loading, router]);
 
+    const handleOAuthSignIn = async (provider: "google" | "github") => {
+        try {
+            await signIn(provider, {
+                callbackUrl: "/languages",
+            });
+        } catch (error) {
+            console.error(`Error al iniciar sesión con ${provider}:`, error);
+            showToast(
+                `Error al iniciar sesión con ${provider === "google" ? "Google" : "GitHub"}`,
+                "error"
+            );
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
 
         try {
-            const response = await fetch("/api/auth/login", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    ...formData,
-                    rememberMe,
-                }),
+            // Usar NextAuth para el login con credentials
+            const result = await signIn("credentials", {
+                email: formData.email,
+                password: formData.password,
+                redirect: false,
             });
 
-            const data = await response.json();
+            if (result?.error) {
+                // Verificar si es un error de email no verificado
+                if (result.error === "Email no verificado") {
+                    showToast(
+                        "Tu cuenta no está verificada. Revisa tu correo.",
+                        "warning"
+                    );
+                    router.push(
+                        `/auth/verify?email=${encodeURIComponent(formData.email)}`
+                    );
+                } else {
+                    // Error en la autenticación
+                    showToast("Credenciales inválidas", "error");
+                }
+                setIsLoading(false);
+                return;
+            }
 
-            if (response.ok) {
+            if (result?.ok) {
                 // Login exitoso
-                showToast(data.message || "¡Bienvenido de nuevo!", "success");
+                showToast("¡Bienvenido de nuevo!", "success");
                 // Actualizar el contexto de autenticación
                 await refreshUser();
                 // Redirigir al dashboard o página principal
                 router.push("/languages");
-            } else if (response.status === 403 && data.requiresVerification) {
-                // Cuenta no verificada - redirigir a verificación
-                showToast(
-                    data.message ||
-                        "Tu cuenta no está verificada. Revisa tu correo.",
-                    "warning"
-                );
-                // Redirigir a la página de verificación con el email
-                router.push(
-                    `/auth/verify?email=${encodeURIComponent(data.email)}`
-                );
-            } else {
-                // Otros errores
-                showToast(data.error || "Error al iniciar sesión", "error");
             }
         } catch (error) {
             console.error("Error al iniciar sesión:", error);
@@ -246,7 +259,11 @@ export default function LoginPage() {
 
                     {/* Social Login Buttons */}
                     <div className="space-y-3">
-                        <button className="w-full px-6 py-3 bg-black/50 border border-green-500/30 rounded-lg text-white hover:border-green-500 hover:bg-green-500/10 transition-all duration-300 flex items-center justify-center gap-3 cursor-pointer">
+                        <button
+                            type="button"
+                            onClick={() => handleOAuthSignIn("github")}
+                            className="w-full px-6 py-3 bg-black/50 border border-green-500/30 rounded-lg text-white hover:border-green-500 hover:bg-green-500/10 transition-all duration-300 flex items-center justify-center gap-3 cursor-pointer"
+                        >
                             <svg
                                 className="w-5 h-5"
                                 fill="currentColor"
@@ -257,7 +274,11 @@ export default function LoginPage() {
                             Continuar con GitHub
                         </button>
 
-                        <button className="w-full px-6 py-3 bg-black/50 border border-green-500/30 rounded-lg text-white hover:border-green-500 hover:bg-green-500/10 transition-all duration-300 flex items-center justify-center gap-3 cursor-pointer">
+                        <button
+                            type="button"
+                            onClick={() => handleOAuthSignIn("google")}
+                            className="w-full px-6 py-3 bg-black/50 border border-green-500/30 rounded-lg text-white hover:border-green-500 hover:bg-green-500/10 transition-all duration-300 flex items-center justify-center gap-3 cursor-pointer"
+                        >
                             <svg
                                 className="w-5 h-5"
                                 fill="currentColor"

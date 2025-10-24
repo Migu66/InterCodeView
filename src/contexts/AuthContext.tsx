@@ -1,12 +1,15 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
+import { signOut as nextAuthSignOut } from "next-auth/react";
 
 interface User {
     id: string;
     name: string;
     email: string;
     avatarUrl?: string | null;
+    provider?: string;
+    hasPassword?: boolean;
 }
 
 interface AuthContextType {
@@ -44,6 +47,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const logout = async () => {
         try {
+            // Cerrar sesión en ambos sistemas (NextAuth y JWT tradicional)
+            await nextAuthSignOut({ redirect: false });
             await fetch("/api/auth/logout", {
                 method: "POST",
                 credentials: "include",

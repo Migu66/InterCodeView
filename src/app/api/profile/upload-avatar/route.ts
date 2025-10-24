@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import { v2 as cloudinary } from "cloudinary";
 import { prisma } from "@/lib/prisma";
 import { generateToken, setAuthCookie } from "@/lib/auth";
+import { auth } from "@/lib/auth-next";
 
 // Configurar Cloudinary
 cloudinary.config({
@@ -14,19 +15,46 @@ cloudinary.config({
 
 export async function POST(request: Request) {
     try {
-        const cookieStore = await cookies();
-        const token = cookieStore.get("auth-token");
+        let userId: string | null = null;
 
-        if (!token) {
+        // Intentar obtener la sesión de NextAuth primero
+        const session = await auth();
+        if (session?.user?.email) {
+            const dbUser = await prisma.user.findUnique({
+                where: { email: session.user.email },
+            });
+            if (dbUser) {
+                userId = dbUser.id;
+            }
+        }
+
+        // Si no hay sesión de NextAuth, intentar con JWT tradicional
+        if (!userId) {
+            const cookieStore = await cookies();
+            const token = cookieStore.get("auth-token");
+
+            if (!token) {
+                return NextResponse.json(
+                    { message: "No autenticado" },
+                    { status: 401 }
+                );
+            }
+
+            const decoded = jwt.verify(
+                token.value,
+                process.env.JWT_SECRET!
+            ) as {
+                id: string;
+            };
+            userId = decoded.id;
+        }
+
+        if (!userId) {
             return NextResponse.json(
                 { message: "No autenticado" },
                 { status: 401 }
             );
         }
-
-        const decoded = jwt.verify(token.value, process.env.JWT_SECRET!) as {
-            id: string;
-        };
 
         // Obtener la imagen del FormData
         const formData = await request.formData();
@@ -78,7 +106,7 @@ export async function POST(request: Request) {
                 .upload_stream(
                     {
                         folder: "intercodeview/avatars",
-                        public_id: `avatar_${decoded.id}`,
+                        public_id: `avatar_${userId}`,
                         overwrite: true,
                         transformation: [
                             {
@@ -106,7 +134,7 @@ export async function POST(request: Request) {
 
         // Actualizar el avatar del usuario en la base de datos
         const updatedUser = await prisma.user.update({
-            where: { id: decoded.id },
+            where: { id: userId },
             data: { avatarUrl: uploadResult.secure_url },
             select: {
                 id: true,
@@ -116,19 +144,28 @@ export async function POST(request: Request) {
             },
         });
 
-        // Generar nuevo token con los datos actualizados
-        const newToken = generateToken({
-            id: updatedUser.id,
-            name: updatedUser.name,
-            email: updatedUser.email,
-            avatarUrl: updatedUser.avatarUrl,
-        });
-        await setAuthCookie(newToken);
+        // Solo generar nuevo token JWT si el usuario usa autenticación tradicional
+        if (session?.user) {
+            // Usuario OAuth - no necesita actualizar token JWT
+            return NextResponse.json({
+                message: "Avatar actualizado correctamente",
+                user: updatedUser,
+            });
+        } else {
+            // Usuario con JWT tradicional - actualizar token
+            const newToken = generateToken({
+                id: updatedUser.id,
+                name: updatedUser.name,
+                email: updatedUser.email,
+                avatarUrl: updatedUser.avatarUrl,
+            });
+            await setAuthCookie(newToken);
 
-        return NextResponse.json({
-            message: "Avatar actualizado correctamente",
-            user: updatedUser,
-        });
+            return NextResponse.json({
+                message: "Avatar actualizado correctamente",
+                user: updatedUser,
+            });
+        }
     } catch (error) {
         return NextResponse.json(
             {
@@ -145,23 +182,50 @@ export async function POST(request: Request) {
 
 export async function DELETE() {
     try {
-        const cookieStore = await cookies();
-        const token = cookieStore.get("auth-token");
+        let userId: string | null = null;
 
-        if (!token) {
+        // Intentar obtener la sesión de NextAuth primero
+        const session = await auth();
+        if (session?.user?.email) {
+            const dbUser = await prisma.user.findUnique({
+                where: { email: session.user.email },
+            });
+            if (dbUser) {
+                userId = dbUser.id;
+            }
+        }
+
+        // Si no hay sesión de NextAuth, intentar con JWT tradicional
+        if (!userId) {
+            const cookieStore = await cookies();
+            const token = cookieStore.get("auth-token");
+
+            if (!token) {
+                return NextResponse.json(
+                    { message: "No autenticado" },
+                    { status: 401 }
+                );
+            }
+
+            const decoded = jwt.verify(
+                token.value,
+                process.env.JWT_SECRET!
+            ) as {
+                id: string;
+            };
+            userId = decoded.id;
+        }
+
+        if (!userId) {
             return NextResponse.json(
                 { message: "No autenticado" },
                 { status: 401 }
             );
         }
 
-        const decoded = jwt.verify(token.value, process.env.JWT_SECRET!) as {
-            id: string;
-        };
-
         // Obtener el usuario actual
         const user = await prisma.user.findUnique({
-            where: { id: decoded.id },
+            where: { id: userId },
         });
 
         if (!user || !user.avatarUrl) {
@@ -174,7 +238,7 @@ export async function DELETE() {
         // Eliminar de Cloudinary
         try {
             await cloudinary.uploader.destroy(
-                `intercodeview/avatars/avatar_${decoded.id}`
+                `intercodeview/avatars/avatar_${userId}`
             );
         } catch (cloudinaryError) {
             console.error("Error al eliminar de Cloudinary:", cloudinaryError);
@@ -182,7 +246,7 @@ export async function DELETE() {
 
         // Actualizar el usuario
         const updatedUser = await prisma.user.update({
-            where: { id: decoded.id },
+            where: { id: userId },
             data: { avatarUrl: null },
             select: {
                 id: true,
@@ -192,19 +256,28 @@ export async function DELETE() {
             },
         });
 
-        // Generar nuevo token con los datos actualizados
-        const newToken = generateToken({
-            id: updatedUser.id,
-            name: updatedUser.name,
-            email: updatedUser.email,
-            avatarUrl: updatedUser.avatarUrl,
-        });
-        await setAuthCookie(newToken);
+        // Solo generar nuevo token JWT si el usuario usa autenticación tradicional
+        if (session?.user) {
+            // Usuario OAuth - no necesita actualizar token JWT
+            return NextResponse.json({
+                message: "Avatar eliminado correctamente",
+                user: updatedUser,
+            });
+        } else {
+            // Usuario con JWT tradicional - actualizar token
+            const newToken = generateToken({
+                id: updatedUser.id,
+                name: updatedUser.name,
+                email: updatedUser.email,
+                avatarUrl: updatedUser.avatarUrl,
+            });
+            await setAuthCookie(newToken);
 
-        return NextResponse.json({
-            message: "Avatar eliminado correctamente",
-            user: updatedUser,
-        });
+            return NextResponse.json({
+                message: "Avatar eliminado correctamente",
+                user: updatedUser,
+            });
+        }
     } catch (error) {
         return NextResponse.json(
             {

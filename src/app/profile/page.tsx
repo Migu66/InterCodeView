@@ -235,10 +235,12 @@ export default function ProfilePage() {
                             onProfileUpdate={handleProfileUpdate}
                         />
 
-                        {/* Security Section */}
-                        <SecuritySection
-                            onPasswordUpdate={handlePasswordUpdate}
-                        />
+                        {/* Security Section - Solo mostrar si el usuario tiene contraseña */}
+                        {user?.hasPassword && (
+                            <SecuritySection
+                                onPasswordUpdate={handlePasswordUpdate}
+                            />
+                        )}
                     </div>
                 </div>
 

@@ -4,22 +4,52 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { generateToken, setAuthCookie } from "@/lib/auth";
+import { auth } from "@/lib/auth-next";
 
 export async function PUT(request: Request) {
     try {
-        const cookieStore = await cookies();
-        const token = cookieStore.get("auth-token");
+        let userId: string | null = null;
+        let isOAuthUser = false;
 
-        if (!token) {
+        // Intentar obtener la sesión de NextAuth primero
+        const session = await auth();
+        if (session?.user?.email) {
+            const dbUser = await prisma.user.findUnique({
+                where: { email: session.user.email },
+            });
+            if (dbUser) {
+                userId = dbUser.id;
+                isOAuthUser = true;
+            }
+        }
+
+        // Si no hay sesión de NextAuth, intentar con JWT tradicional
+        if (!userId) {
+            const cookieStore = await cookies();
+            const token = cookieStore.get("auth-token");
+
+            if (!token) {
+                return NextResponse.json(
+                    { message: "No autenticado" },
+                    { status: 401 }
+                );
+            }
+
+            const decoded = jwt.verify(
+                token.value,
+                process.env.JWT_SECRET!
+            ) as {
+                id: string;
+            };
+            userId = decoded.id;
+        }
+
+        if (!userId) {
             return NextResponse.json(
                 { message: "No autenticado" },
                 { status: 401 }
             );
         }
-
-        const decoded = jwt.verify(token.value, process.env.JWT_SECRET!) as {
-            id: string;
-        };
 
         const { name, currentPassword, newPassword } = await request.json();
 
@@ -40,7 +70,7 @@ export async function PUT(request: Request) {
 
         // Obtener el usuario actual
         const user = await prisma.user.findUnique({
-            where: { id: decoded.id },
+            where: { id: userId },
         });
 
         if (!user) {
@@ -52,6 +82,17 @@ export async function PUT(request: Request) {
 
         // Si se quiere cambiar la contraseña
         if (newPassword) {
+            // Verificar que el usuario tenga contraseña (no sea usuario OAuth)
+            if (!user.password) {
+                return NextResponse.json(
+                    {
+                        message:
+                            "No puedes cambiar la contraseña porque iniciaste sesión con un proveedor externo (Google/GitHub)",
+                    },
+                    { status: 400 }
+                );
+            }
+
             if (!currentPassword) {
                 return NextResponse.json(
                     {
@@ -91,7 +132,7 @@ export async function PUT(request: Request) {
 
             // Actualizar usuario con nueva contraseña
             const updatedUser = await prisma.user.update({
-                where: { id: decoded.id },
+                where: { id: userId },
                 data: {
                     name,
                     password: hashedPassword,
@@ -104,14 +145,16 @@ export async function PUT(request: Request) {
                 },
             });
 
-            // Generar nuevo token con los datos actualizados
-            const newToken = generateToken({
-                id: updatedUser.id,
-                name: updatedUser.name,
-                email: updatedUser.email,
-                avatarUrl: updatedUser.avatarUrl,
-            });
-            await setAuthCookie(newToken);
+            // Solo generar token para usuarios con autenticación tradicional
+            if (!isOAuthUser) {
+                const newToken = generateToken({
+                    id: updatedUser.id,
+                    name: updatedUser.name,
+                    email: updatedUser.email,
+                    avatarUrl: updatedUser.avatarUrl,
+                });
+                await setAuthCookie(newToken);
+            }
 
             return NextResponse.json({
                 message: "Perfil y contraseña actualizados correctamente",
@@ -121,7 +164,7 @@ export async function PUT(request: Request) {
 
         // Solo actualizar el nombre
         const updatedUser = await prisma.user.update({
-            where: { id: decoded.id },
+            where: { id: userId },
             data: { name },
             select: {
                 id: true,
@@ -131,14 +174,16 @@ export async function PUT(request: Request) {
             },
         });
 
-        // Generar nuevo token con los datos actualizados
-        const newToken = generateToken({
-            id: updatedUser.id,
-            name: updatedUser.name,
-            email: updatedUser.email,
-            avatarUrl: updatedUser.avatarUrl,
-        });
-        await setAuthCookie(newToken);
+        // Solo generar token para usuarios con autenticación tradicional
+        if (!isOAuthUser) {
+            const newToken = generateToken({
+                id: updatedUser.id,
+                name: updatedUser.name,
+                email: updatedUser.email,
+                avatarUrl: updatedUser.avatarUrl,
+            });
+            await setAuthCookie(newToken);
+        }
 
         return NextResponse.json({
             message: "Perfil actualizado correctamente",

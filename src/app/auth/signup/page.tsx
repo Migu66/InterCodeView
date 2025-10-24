@@ -7,6 +7,7 @@ import DotGrid from "@/components/ui/DotGrid";
 import Toast from "@/components/ui/Toast";
 import { useAuth } from "@/contexts/AuthContext";
 import PasswordToggleButton from "@/components/ui/PasswordToggleButton";
+import { signIn } from "next-auth/react";
 
 export default function SignUpPage() {
     const router = useRouter();
@@ -33,6 +34,21 @@ export default function SignUpPage() {
     const [toastType, setToastType] = useState<"success" | "error" | "info">(
         "success"
     );
+
+    const handleOAuthSignIn = async (provider: "google" | "github") => {
+        try {
+            await signIn(provider, {
+                callbackUrl: "/languages",
+            });
+        } catch (error) {
+            console.error(`Error al iniciar sesión con ${provider}:`, error);
+            setToastMessage(
+                `Error al iniciar sesión con ${provider === "google" ? "Google" : "GitHub"}`
+            );
+            setToastType("error");
+            setShowToast(true);
+        }
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -335,7 +351,11 @@ export default function SignUpPage() {
 
                     {/* Social Login Buttons */}
                     <div className="space-y-3">
-                        <button className="w-full px-6 py-3 bg-black/50 border border-green-500/30 rounded-lg text-white hover:border-green-500 hover:bg-green-500/10 transition-all duration-300 flex items-center justify-center gap-3">
+                        <button
+                            type="button"
+                            onClick={() => handleOAuthSignIn("github")}
+                            className="w-full px-6 py-3 bg-black/50 border border-green-500/30 rounded-lg text-white hover:border-green-500 hover:bg-green-500/10 transition-all duration-300 flex items-center justify-center gap-3"
+                        >
                             <svg
                                 className="w-5 h-5"
                                 fill="currentColor"
@@ -346,7 +366,11 @@ export default function SignUpPage() {
                             Continuar con GitHub
                         </button>
 
-                        <button className="w-full px-6 py-3 bg-black/50 border border-green-500/30 rounded-lg text-white hover:border-green-500 hover:bg-green-500/10 transition-all duration-300 flex items-center justify-center gap-3">
+                        <button
+                            type="button"
+                            onClick={() => handleOAuthSignIn("google")}
+                            className="w-full px-6 py-3 bg-black/50 border border-green-500/30 rounded-lg text-white hover:border-green-500 hover:bg-green-500/10 transition-all duration-300 flex items-center justify-center gap-3"
+                        >
                             <svg
                                 className="w-5 h-5"
                                 fill="currentColor"
