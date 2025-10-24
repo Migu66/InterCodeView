@@ -76,19 +76,24 @@ export const authConfig: NextAuthConfig = {
                 });
 
                 if (existingUser) {
-                    // Actualizar el usuario existente - NO guardar imagen de OAuth
-                    await prisma.user.update({
-                        where: { id: existingUser.id },
-                        data: {
-                            emailVerified: true, // Los emails de OAuth ya están verificados
-                        },
-                    });
+                    // Solo verificar el email si no está verificado
+                    // NO sobrescribir provider/providerId para mantener el proveedor original
+                    if (!existingUser.emailVerified) {
+                        await prisma.user.update({
+                            where: { id: existingUser.id },
+                            data: {
+                                emailVerified: true, // Los emails de OAuth ya están verificados
+                            },
+                        });
+                    }
                 } else {
-                    // Crear nuevo usuario con OAuth - NO guardar imagen de OAuth
+                    // Crear nuevo usuario con OAuth
                     await prisma.user.create({
                         data: {
                             email: user.email,
                             name: user.name || "Usuario",
+                            provider: account.provider,
+                            providerId: account.providerAccountId,
                             emailVerified: true,
                             // avatarUrl se omite intencionalmente
                         },
