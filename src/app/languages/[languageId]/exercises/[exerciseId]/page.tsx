@@ -491,9 +491,17 @@ export default function ExercisePage() {
                                         language={language.slug}
                                         value={code}
                                         onChange={handleCodeChange}
-                                        onRun={handleRunCode}
+                                        onRun={
+                                            language.slug !== "sql"
+                                                ? handleRunCode
+                                                : undefined
+                                        }
                                         isRunning={isRunning}
-                                        isTerminalVisible={isTerminalVisible}
+                                        isTerminalVisible={
+                                            language.slug !== "sql"
+                                                ? isTerminalVisible
+                                                : false
+                                        }
                                     />
 
                                     {/* Evaluation Feedback */}
@@ -510,14 +518,16 @@ export default function ExercisePage() {
                                         />
                                     )}
 
-                                    {/* Terminal Output */}
-                                    <TerminalOutput
-                                        output={terminalOutput}
-                                        isRunning={isRunning}
-                                        isVisible={isTerminalVisible}
-                                        onToggle={handleToggleTerminal}
-                                        onClear={handleClearTerminal}
-                                    />
+                                    {/* Terminal Output - Solo para lenguajes que no son SQL */}
+                                    {language.slug !== "sql" && (
+                                        <TerminalOutput
+                                            output={terminalOutput}
+                                            isRunning={isRunning}
+                                            isVisible={isTerminalVisible}
+                                            onToggle={handleToggleTerminal}
+                                            onClear={handleClearTerminal}
+                                        />
+                                    )}
                                 </div>
                             </div>
                         </div>

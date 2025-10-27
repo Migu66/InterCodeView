@@ -47,7 +47,7 @@ export default function CodeEditor({
     // Calcular altura dinámica basada en si el terminal está visible
     const editorHeight = isTerminalVisible
         ? "h-[calc(100vh-680px)]"
-        : "h-[calc(102.5vh-385px)]";
+        : "h-[calc(100vh-305px)]";
 
     return (
         <div
