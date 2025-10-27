@@ -9,7 +9,6 @@ import {
     SiKotlin,
     SiRuby,
     SiPhp,
-    SiMysql,
 } from "react-icons/si";
 import { FaJava, FaDatabase } from "react-icons/fa";
 import { TbBrandCSharp } from "react-icons/tb";
