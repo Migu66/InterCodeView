@@ -54,7 +54,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 credentials: "include",
             });
             setUser(null);
-            window.location.href = "/auth/login";
+            window.location.href = "/";
         } catch (error) {
             console.error("Error al cerrar sesión:", error);
         }
