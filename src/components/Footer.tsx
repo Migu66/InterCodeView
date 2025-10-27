@@ -8,6 +8,14 @@ export default function Footer() {
                     &copy; {currentYear} InterCodeView. Preparándote para el
                     éxito.
                 </p>
+                <p className="mt-2">
+                    <a
+                        href="mailto:miguelgp789@gmail.com"
+                        className="text-green-400 hover:text-green-300 transition-colors"
+                    >
+                        Contacto
+                    </a>
+                </p>
             </div>
         </footer>
     );
