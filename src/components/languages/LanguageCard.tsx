@@ -11,7 +11,7 @@ import {
     SiPhp,
     SiMysql,
 } from "react-icons/si";
-import { FaJava } from "react-icons/fa";
+import { FaJava, FaDatabase } from "react-icons/fa";
 import { TbBrandCSharp } from "react-icons/tb";
 
 interface LanguageCardProps {
@@ -39,7 +39,7 @@ const iconComponentMap: Record<string, React.ElementType> = {
     SiKotlin: SiKotlin,
     SiRuby: SiRuby,
     SiPhp: SiPhp,
-    SiMysql: SiMysql,
+    SiMysql: FaDatabase,
 };
 
 // Mapeo de fallback por slug si no hay icono en BD
@@ -56,7 +56,7 @@ const slugIconMap: Record<string, React.ElementType> = {
     kotlin: SiKotlin,
     ruby: SiRuby,
     php: SiPhp,
-    sql: SiMysql,
+    sql: FaDatabase,
 };
 
 export default function LanguageCard({
