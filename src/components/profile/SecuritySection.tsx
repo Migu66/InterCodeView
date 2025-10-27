@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Lock } from "lucide-react";
 import PrimaryButton from "@/components/basics/PrimaryButton";
+import PasswordToggleButton from "@/components/ui/PasswordToggleButton";
 
 interface SecuritySectionProps {
     onPasswordUpdate: (
@@ -17,6 +18,9 @@ export default function SecuritySection({
 }: SecuritySectionProps) {
     const [isEditing, setIsEditing] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+    const [showNewPassword, setShowNewPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [passwordForm, setPasswordForm] = useState({
         currentPassword: "",
         newPassword: "",
@@ -101,56 +105,96 @@ export default function SecuritySection({
                                 <label className="text-green-400 text-sm font-semibold uppercase tracking-wide mb-2 block">
                                     Contraseña Actual
                                 </label>
-                                <input
-                                    type="password"
-                                    value={passwordForm.currentPassword}
-                                    onChange={(e) =>
-                                        setPasswordForm({
-                                            ...passwordForm,
-                                            currentPassword: e.target.value,
-                                        })
-                                    }
-                                    className="w-full px-5 py-3 bg-black/50 border-2 border-green-500/30 rounded-xl focus:outline-none focus:border-green-500 transition-all duration-300 font-medium focus:shadow-lg focus:shadow-green-500/20"
-                                    disabled={isSubmitting}
-                                    required
-                                />
+                                <div className="relative">
+                                    <input
+                                        type={
+                                            showCurrentPassword
+                                                ? "text"
+                                                : "password"
+                                        }
+                                        value={passwordForm.currentPassword}
+                                        onChange={(e) =>
+                                            setPasswordForm({
+                                                ...passwordForm,
+                                                currentPassword: e.target.value,
+                                            })
+                                        }
+                                        className="w-full px-5 py-3 bg-black/50 border-2 border-green-500/30 rounded-xl focus:outline-none focus:border-green-500 transition-all duration-300 font-medium focus:shadow-lg focus:shadow-green-500/20 pr-12"
+                                        disabled={isSubmitting}
+                                        required
+                                    />
+                                    <PasswordToggleButton
+                                        showPassword={showCurrentPassword}
+                                        onToggle={() =>
+                                            setShowCurrentPassword(
+                                                !showCurrentPassword
+                                            )
+                                        }
+                                    />
+                                </div>
                             </div>
                             <div className="transform transition-all duration-300">
                                 <label className="text-green-400 text-sm font-semibold uppercase tracking-wide mb-2 block">
                                     Nueva Contraseña
                                 </label>
-                                <input
-                                    type="password"
-                                    value={passwordForm.newPassword}
-                                    onChange={(e) =>
-                                        setPasswordForm({
-                                            ...passwordForm,
-                                            newPassword: e.target.value,
-                                        })
-                                    }
-                                    className="w-full px-5 py-3 bg-black/50 border-2 border-green-500/30 rounded-xl focus:outline-none focus:border-green-500 transition-all duration-300 font-medium focus:shadow-lg focus:shadow-green-500/20"
-                                    disabled={isSubmitting}
-                                    required
-                                    minLength={6}
-                                />
+                                <div className="relative">
+                                    <input
+                                        type={
+                                            showNewPassword
+                                                ? "text"
+                                                : "password"
+                                        }
+                                        value={passwordForm.newPassword}
+                                        onChange={(e) =>
+                                            setPasswordForm({
+                                                ...passwordForm,
+                                                newPassword: e.target.value,
+                                            })
+                                        }
+                                        className="w-full px-5 py-3 bg-black/50 border-2 border-green-500/30 rounded-xl focus:outline-none focus:border-green-500 transition-all duration-300 font-medium focus:shadow-lg focus:shadow-green-500/20 pr-12"
+                                        disabled={isSubmitting}
+                                        required
+                                        minLength={6}
+                                    />
+                                    <PasswordToggleButton
+                                        showPassword={showNewPassword}
+                                        onToggle={() =>
+                                            setShowNewPassword(!showNewPassword)
+                                        }
+                                    />
+                                </div>
                             </div>
                             <div className="transform transition-all duration-300">
                                 <label className="text-green-400 text-sm font-semibold uppercase tracking-wide mb-2 block">
                                     Confirmar Nueva Contraseña
                                 </label>
-                                <input
-                                    type="password"
-                                    value={passwordForm.confirmPassword}
-                                    onChange={(e) =>
-                                        setPasswordForm({
-                                            ...passwordForm,
-                                            confirmPassword: e.target.value,
-                                        })
-                                    }
-                                    className="w-full px-5 py-3 bg-black/50 border-2 border-green-500/30 rounded-xl focus:outline-none focus:border-green-500 transition-all duration-300 font-medium focus:shadow-lg focus:shadow-green-500/20"
-                                    disabled={isSubmitting}
-                                    required
-                                />
+                                <div className="relative">
+                                    <input
+                                        type={
+                                            showConfirmPassword
+                                                ? "text"
+                                                : "password"
+                                        }
+                                        value={passwordForm.confirmPassword}
+                                        onChange={(e) =>
+                                            setPasswordForm({
+                                                ...passwordForm,
+                                                confirmPassword: e.target.value,
+                                            })
+                                        }
+                                        className="w-full px-5 py-3 bg-black/50 border-2 border-green-500/30 rounded-xl focus:outline-none focus:border-green-500 transition-all duration-300 font-medium focus:shadow-lg focus:shadow-green-500/20 pr-12"
+                                        disabled={isSubmitting}
+                                        required
+                                    />
+                                    <PasswordToggleButton
+                                        showPassword={showConfirmPassword}
+                                        onToggle={() =>
+                                            setShowConfirmPassword(
+                                                !showConfirmPassword
+                                            )
+                                        }
+                                    />
+                                </div>
                             </div>
                             <div className="flex gap-4 pt-4">
                                 <PrimaryButton
@@ -163,7 +207,7 @@ export default function SecuritySection({
                                     type="button"
                                     onClick={handleCancel}
                                     disabled={isSubmitting}
-                                    className="px-8 py-3 bg-transparent border-2 border-green-500 text-green-500 font-bold rounded-lg hover:bg-green-500 hover:text-black transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="px-8 py-3 bg-transparent border-2 border-green-500 text-green-500 font-bold rounded-lg cursor-pointer hover:bg-green-500 hover:text-black transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     Cancelar
                                 </button>

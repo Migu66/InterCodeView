@@ -20,13 +20,6 @@ const languageMap: { [key: string]: string } = {
     java: "java",
     cpp: "cpp",
     csharp: "csharp",
-    go: "go",
-    rust: "rust",
-    php: "php",
-    ruby: "ruby",
-    swift: "swift",
-    kotlin: "kotlin",
-    sql: "sql",
 };
 
 export default function CodeEditor({
@@ -47,7 +40,7 @@ export default function CodeEditor({
     // Calcular altura dinámica basada en si el terminal está visible
     const editorHeight = isTerminalVisible
         ? "h-[calc(100vh-680px)]"
-        : "h-[calc(100vh-305px)]";
+        : "h-[calc(102.5vh-385px)]";
 
     return (
         <div
@@ -76,8 +69,8 @@ export default function CodeEditor({
                                 </>
                             ) : (
                                 <>
-                                    <FiPlay size={16} />
-                                    <span>Ejecutar Código</span>
+                                    <FiPlay size={16} className="cursor-pointer"/>
+                                    <span className="cursor-pointer">Ejecutar Código</span>
                                 </>
                             )}
                         </button>

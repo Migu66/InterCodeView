@@ -51,7 +51,7 @@ export default function TerminalOutput({
                     <button
                         onClick={onClear}
                         disabled={!output || isRunning}
-                        className="text-xs px-2 py-1 bg-gray-800 hover:bg-gray-700 rounded text-gray-400 hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="text-xs px-2 py-1 bg-gray-800 hover:bg-gray-700 rounded text-gray-400 hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                         title="Limpiar terminal"
                     >
                         <FiX size={14} />
@@ -62,9 +62,9 @@ export default function TerminalOutput({
                         title={isVisible ? "Minimizar" : "Expandir"}
                     >
                         {isVisible ? (
-                            <FiChevronDown size={16} />
+                            <FiChevronDown size={16} className="cursor-pointer"/>
                         ) : (
-                            <FiChevronUp size={16} />
+                            <FiChevronUp size={16} className="cursor-pointer" />
                         )}
                     </button>
                 </div>

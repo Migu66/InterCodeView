@@ -61,7 +61,7 @@ export default function AvatarSection({
                     <button
                         onClick={() => fileInputRef.current?.click()}
                         disabled={isUploading}
-                        className="absolute bottom-0 right-0 bg-gradient-to-r from-green-500 to-green-400 hover:from-green-400 hover:to-green-300 p-3 rounded-full transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-green-500/50 hover:scale-110 border-4 border-black"
+                        className="absolute bottom-0 right-0 bg-gradient-to-r from-green-500 to-green-400 hover:from-green-400 hover:to-green-300 p-3 rounded-full transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-green-500/50 hover:scale-110 border-4 border-black cursor-pointer"
                     >
                         <Camera className="w-6 h-6 text-black" />
                     </button>
@@ -81,7 +81,7 @@ export default function AvatarSection({
                 {user?.avatarUrl && (
                     <button
                         onClick={onRemoveAvatar}
-                        className="mt-3 text-red-400 hover:text-red-300 text-sm transition-colors font-medium hover:underline"
+                        className="mt-3 text-red-400 hover:text-red-300 text-sm transition-colors font-medium hover:underline cursor-pointer"
                     >
                         Eliminar foto
                     </button>
