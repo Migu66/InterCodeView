@@ -64,7 +64,7 @@ export default function ExerciseStatement({
             </div>
 
             {/* Statement Content */}
-            <div className="flex-1 bg-[#0d0d0d] border-l border-r border-b border-gray-800 rounded-b-lg p-6 overflow-y-auto custom-scrollbar">
+            <div className="flex-1 bg-[#0d0d0d] border-l border-r border-b border-gray-800 rounded-b-lg p-6 overflow-y-auto custom-scrollbar pb-5">
                 {/* Difficulty Badge */}
                 <div className="mb-6">
                     <div
@@ -99,19 +99,6 @@ export default function ExerciseStatement({
                         </p>
                     </div>
                 )}
-
-                {/* Tips Section */}
-                <div className="mt-6 p-4 bg-blue-500/5 border border-blue-500/20 rounded-lg">
-                    <h3 className="text-blue-400 font-semibold mb-2 flex items-center gap-2">
-                        <span>💡</span>
-                        <span>Consejos</span>
-                    </h3>
-                    <ul className="text-gray-400 text-sm space-y-1 list-disc list-inside">
-                        <li>Lee cuidadosamente el enunciado</li>
-                        <li>Planifica tu solución antes de codificar</li>
-                        <li>Optimiza tu solución si es posible</li>
-                    </ul>
-                </div>
             </div>
 
             <style jsx global>{`
