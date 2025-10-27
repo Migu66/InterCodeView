@@ -20,6 +20,13 @@ const languageMap: { [key: string]: string } = {
     java: "java",
     cpp: "cpp",
     csharp: "csharp",
+    go: "go",
+    rust: "rust",
+    php: "php",
+    ruby: "ruby",
+    swift: "swift",
+    kotlin: "kotlin",
+    sql: "sql",
 };
 
 export default function CodeEditor({
