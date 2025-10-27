@@ -1,7 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-@custom-variant dark (&:is(.dark *));
+/* @custom-variant dark (&:is(.dark *)); */
 
 /* Custom Animations for InterCodeView */
 
@@ -390,7 +390,7 @@ html {
     scroll-behavior: smooth;
 }
 
-@theme inline {
+/* @theme inline {
     --radius-sm: calc(var(--radius) - 4px);
     --radius-md: calc(var(--radius) - 2px);
     --radius-lg: var(--radius);
@@ -426,7 +426,7 @@ html {
     --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
     --color-sidebar-border: var(--sidebar-border);
     --color-sidebar-ring: var(--sidebar-ring);
-}
+} */
 
 :root {
     --radius: 0.625rem;
@@ -499,10 +499,12 @@ html {
 
 @layer base {
     * {
-        @apply border-border outline-ring/50;
+        border-color: var(--border);
+        outline-color: oklch(from var(--ring) l c h / 50%);
     }
     body {
-        @apply bg-background text-foreground;
+        background-color: var(--background);
+        color: var(--foreground);
     }
 }
 
@@ -562,4 +564,53 @@ html {
 
 .animate-bounce-subtle {
     animation: bounce-subtle 0.6s ease-in-out;
+}
+
+/* Animaciones para modales */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95) translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+@keyframes scaleOut {
+    from {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: scale(0.95) translateY(-10px);
+    }
+}
+
+.animate-fadeIn {
+    animation: fadeIn 0.3s ease-out;
+}
+
+.animate-scaleIn {
+    animation: scaleIn 0.3s ease-out;
 }

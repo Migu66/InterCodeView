@@ -9,6 +9,8 @@ import DotGrid from "@/components/ui/DotGrid";
 import AvatarSection from "@/components/profile/AvatarSection";
 import ProfileInfoSection from "@/components/profile/ProfileInfoSection";
 import SecuritySection from "@/components/profile/SecuritySection";
+import DeleteAccountSection from "@/components/profile/DeleteAccountSection";
+import { signOut } from "next-auth/react";
 
 export default function ProfilePage() {
     const { user, refreshUser } = useAuth();
@@ -199,6 +201,70 @@ export default function ProfilePage() {
         }
     };
 
+    const handleDeleteAccount = async (password?: string) => {
+        try {
+            const response = await fetch("/api/profile/delete-account", {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify({ password }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                showToast("Cuenta eliminada correctamente", "success");
+
+                // Limpiar cookies y cerrar sesión
+                await fetch("/api/auth/logout", {
+                    method: "POST",
+                    credentials: "include",
+                });
+
+                // Cerrar sesión de NextAuth si existe
+                await signOut({ redirect: false });
+
+                // Esperar un poco y redirigir a la página de inicio
+                setTimeout(() => {
+                    window.location.href = "/";
+                }, 1500);
+            } else {
+                showToast(
+                    data.message || "Error al eliminar la cuenta",
+                    "error"
+                );
+                throw new Error(data.message || "Error al eliminar la cuenta");
+            }
+        } catch (error) {
+            if (error instanceof Error) {
+                throw error;
+            }
+            showToast("Error de conexión", "error");
+            throw error;
+        }
+    };
+
+    const handleVerifyPassword = async (password: string): Promise<boolean> => {
+        try {
+            const response = await fetch("/api/profile/verify-password", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify({ password }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                return data.valid;
+            }
+            return false;
+        } catch (error) {
+            console.error("Error al verificar contraseña:", error);
+            return false;
+        }
+    };
+
     return (
         <AuthGuard>
             <div className="min-h-screen bg-black text-white overflow-hidden relative">
@@ -241,6 +307,13 @@ export default function ProfilePage() {
                                 onPasswordUpdate={handlePasswordUpdate}
                             />
                         )}
+
+                        {/* Delete Account Section - Mostrar siempre */}
+                        <DeleteAccountSection
+                            onDeleteAccount={handleDeleteAccount}
+                            onVerifyPassword={handleVerifyPassword}
+                            hasPassword={!!user?.hasPassword}
+                        />
                     </div>
                 </div>
 
