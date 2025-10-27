@@ -316,11 +316,11 @@ class CachedRepository(repo: Repository) : Repository by repo
 }
 
 class DatabaseRepository : Repository {
-    override fun getData() = "Data from DB"
+    override fun getData() = // Tu código aquí
 }
 
 class CachedRepository(repo: Repository) : Repository by repo {
-    // Tu código aquí (puede añadir lógica extra)
+    // Tu código aquí (puede añadir lógica extra si quieres)
 }
 
 // Prueba
@@ -408,8 +408,8 @@ fun demonstrateScopeFunctions() {
         // Tu código aquí
     }
     
-    // Usa let para transformar
-    val upperName = user.name.let {
+    // Usa let para transformar nullable
+    val upperName = user.name?.let {
         // Tu código aquí
     }
     

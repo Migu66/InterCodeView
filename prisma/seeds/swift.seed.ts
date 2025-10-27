@@ -314,15 +314,7 @@ Usa \`throw ValidationError.tooYoung\` y \`try validateAge(age)\`.`,
 
 func validateAge(_ age: Int) throws {
     // Tu código aquí
-    if age < 0 {
-        throw ValidationError.invalidValue
-    }
-    if age < 18 {
-        throw ValidationError.tooYoung
-    }
-    if age > 120 {
-        throw ValidationError.tooOld
-    }
+    // Lanza errores según validaciones
 }
 
 // Prueba
@@ -432,16 +424,10 @@ var balance: Double = 0 {
     var balance: Double = 0 {
         willSet {
             // Tu código aquí
-            print("Balance va a cambiar a \\(newValue)")
         }
         didSet {
             // Tu código aquí
-            if balance < 0 {
-                print("¡Advertencia! Balance negativo")
-                balance = oldValue // Revertir
-            } else {
-                print("Balance actualizado: \\(oldValue) -> \\(balance)")
-            }
+            // Valida que no sea negativo
         }
     }
     
@@ -499,16 +485,18 @@ let products = [
     Product(name: "Monitor", price: 300)
 ]
 
+// Tu código aquí
 // Map: extraer nombres
-let names = products.map { $0.name }
-print("Productos: \\(names)")
+let names = // ...
 
-// Filter: productos caros
-let expensive = products.filter { $0.price > 50 }
-print("Productos caros: \\(expensive.map { $0.name })")
+// Filter: productos caros (> $50)
+let expensive = // ...
 
 // Reduce: precio total
-let total = products.reduce(0) { $0 + $1.price }
+let total = // ...
+
+print("Productos: \\(names)")
+print("Productos caros: \\(expensive.map { $0.name })")
 print("Total: $\\(total)")`,
         },
 
@@ -557,7 +545,7 @@ protocol Colorful {
 // Implementación default
 extension Drawable {
     func draw() {
-        print("Dibujando forma genérica")
+        // Tu código aquí
     }
 }
 
@@ -569,7 +557,7 @@ struct Circle: ColoredShape {
     let color: String
     
     func draw() {
-        print("Dibujando círculo \\(color) de radio \\(radius)")
+        // Tu código aquí
     }
 }
 
@@ -623,14 +611,8 @@ func fetchData() -> Result<String, Error> {
 }
 
 func fetchUserData(id: Int) -> Result<String, NetworkError> {
-    // Simular fetch
-    if id < 0 {
-        return .failure(.invalidURL)
-    }
-    if id == 0 {
-        return .failure(.noData)
-    }
-    return .success("Usuario #\\(id)")
+    // Tu código aquí
+    // Simular fetch con Result
 }
 
 // Uso con switch
@@ -689,13 +671,12 @@ struct Clamped<T: Comparable> {
     private let range: ClosedRange<T>
     
     var wrappedValue: T {
-        get { value }
-        set { value = min(max(newValue, range.lowerBound), range.upperBound) }
+        get { /* Tu código aquí */ }
+        set { /* Tu código aquí - clampea el valor */ }
     }
     
     init(wrappedValue: T, _ range: ClosedRange<T>) {
-        self.range = range
-        self.value = min(max(wrappedValue, range.lowerBound), range.upperBound)
+        // Tu código aquí
     }
 }
 
@@ -751,23 +732,9 @@ Publishers emiten valores. Subscribers los reciben. Operators transforman.`,
 // Publisher simple
 let numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].publisher
 
-// Pipeline con operadores
-let subscription = numbers
-    .filter { $0 % 2 == 0 }  // Solo pares
-    .map { $0 * 2 }          // Multiplicar por 2
-    .sink(
-        receiveCompletion: { completion in
-            switch completion {
-            case .finished:
-                print("Completado")
-            case .failure(let error):
-                print("Error: \\(error)")
-            }
-        },
-        receiveValue: { value in
-            print("Valor: \\(value)")
-        }
-    )
+// Tu código aquí
+// Pipeline con operadores (filter, map, sink)
+let subscription = // ...
 
 // No olvidar cancelar
 // subscription.cancel()`,
@@ -820,7 +787,7 @@ class Apartment {
 
 class Apartment {
     let unit: String
-    weak var tenant: Person?  // weak para evitar reference cycle
+    var tenant: Person?  // Tu código aquí: ¿weak o strong?
     
     init(unit: String) {
         self.unit = unit
@@ -840,7 +807,7 @@ john?.apartment = unit4A
 unit4A?.tenant = john
 
 // Liberar referencias
-john = nil  // Debería desinicializar gracias a weak
+john = nil  // ¿Se desinicializa?
 unit4A = nil`,
         },
     ];

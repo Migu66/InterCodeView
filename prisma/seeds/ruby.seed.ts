@@ -232,12 +232,8 @@ Usa \`sum\`, \`count\`, \`max\`, etc.`,
             languageId,
             order: 6,
             starterCode: `def analyze_numbers(nums)
-  {
-    sum: nums.sum,
-    avg: nums.sum / nums.size.to_f,
-    evens: nums.count(&:even?),
-    max: nums.max
-  }
+  # Tu código aquí
+  # Retorna un hash con :sum, :avg, :evens, :max
 end
 
 # Prueba
@@ -272,12 +268,10 @@ Lambda valida argumentos, Proc no. Lambda retorna al caller, Proc no.`,
             order: 7,
             starterCode: `def create_multiplier(factor)
   # Tu código aquí - retorna lambda
-  lambda { |n| n * factor }
 end
 
 def create_logger(prefix)
   # Tu código aquí - retorna Proc
-  Proc.new { |msg| puts "#{prefix}: #{msg}" }
 end
 
 # Prueba
@@ -318,11 +312,11 @@ Usa \`include ModuleName\` para incluir módulos.`,
             order: 8,
             starterCode: `module Timestampable
   def created_at
-    @created_at ||= Time.now
+    # Tu código aquí
   end
   
   def time_since_creation
-    Time.now - created_at
+    # Tu código aquí
   end
 end
 
@@ -383,9 +377,7 @@ end
 
 def validate_age(age)
   # Tu código aquí
-  raise ValidationError, "La edad debe ser positiva" if age < 0
-  raise ValidationError, "La edad debe ser menor a 150" if age > 150
-  true
+  # Lanza ValidationError si age < 0 o age > 150
 end
 
 # Prueba
@@ -429,13 +421,11 @@ Usa \`text.scan(/regex/)\` para extraer múltiples matches.`,
             starterCode: `def extract_emails(text)
   # Tu código aquí
   # Usa scan con regex de email
-  text.scan(/\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}\\b/)
 end
 
 def valid_phone?(phone)
   # Tu código aquí
   # Valida formato XXX-XXX-XXXX
-  phone =~ /^\\d{3}-\\d{3}-\\d{4}$/
 end
 
 # Prueba
@@ -481,20 +471,12 @@ Usa \`define_method\` en bucle, \`instance_variable_get/set\`.`,
   end
   
   def method_missing(method_name, *args)
-    method_str = method_name.to_s
-    
-    if method_str.end_with?('=')
-      # Setter
-      attr_name = method_str.chop.to_sym
-      @attributes[attr_name] = args.first
-    else
-      # Getter
-      @attributes[method_name]
-    end
+    # Tu código aquí
+    # Implementa getter y setter dinámicos
   end
   
   def respond_to_missing?(method_name, include_private = false)
-    true
+    # Tu código aquí
   end
 end
 
@@ -537,21 +519,22 @@ Usa \`instance_eval\` para evaluar el bloque en contexto.
   
   def initialize(&block)
     @routes = []
-    instance_eval(&block) if block_given?
+    # Tu código aquí
+    # Usa instance_eval para evaluar el bloque
   end
   
   def get(path, options = {})
-    add_route('GET', path, options[:to])
+    # Tu código aquí
   end
   
   def post(path, options = {})
-    add_route('POST', path, options[:to])
+    # Tu código aquí
   end
   
   private
   
   def add_route(method, path, controller)
-    @routes << { method: method, path: path, controller: controller }
+    # Tu código aquí
   end
 end
 
@@ -601,11 +584,11 @@ person2 = "Juan"
 # Añade método singleton solo a person1
 class << person1
   def greet
-    "Hola, soy #{self}"
+    # Tu código aquí
   end
   
   def shout
-    self.upcase + "!!!"
+    # Tu código aquí
   end
 end
 
@@ -654,11 +637,11 @@ Usa \`using ModuleName\` para activar refinements.`,
             starterCode: `module StringExtensions
   refine String do
     def palindrome?
-      self.downcase == self.downcase.reverse
+      # Tu código aquí
     end
     
     def word_count
-      self.split.size
+      # Tu código aquí
     end
   end
 end
@@ -721,15 +704,13 @@ class ThreadSafeCounter
   end
   
   def increment
-    @mutex.synchronize do
-      @count += 1
-    end
+    # Tu código aquí
+    # Usa @mutex.synchronize
   end
   
   def value
-    @mutex.synchronize do
-      @count
-    end
+    # Tu código aquí
+    # Usa @mutex.synchronize
   end
 end
 

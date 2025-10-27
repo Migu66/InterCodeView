@@ -209,15 +209,8 @@ Subquery correlacionada: referencia tabla externa (WHERE o.user_id = u.id). EXIS
             languageId,
             order: 6,
             starterCode: `-- Usuarios con órdenes sobre el promedio
-SELECT u.name, u.email,
-    (SELECT COUNT(*) FROM orders o WHERE o.user_id = u.id) as order_count,
-    (SELECT AVG(total) FROM orders o WHERE o.user_id = u.id) as avg_order
-FROM users u
-WHERE EXISTS (
-    SELECT 1 FROM orders o 
-    WHERE o.user_id = u.id 
-    AND o.total > (SELECT AVG(total) FROM orders)
-);`,
+-- Tu código aquí
+-- Pista: usa subqueries en SELECT y WHERE`,
         },
         {
             title: "Window Functions",
@@ -251,15 +244,8 @@ OVER define la ventana. PARTITION BY agrupa, ORDER BY ordena dentro del grupo.`,
             languageId,
             order: 7,
             starterCode: `-- Ranking de usuarios por compras en cada ciudad
-SELECT 
-    name,
-    city,
-    total_purchases,
-    ROW_NUMBER() OVER (PARTITION BY city ORDER BY total_purchases DESC) as row_num,
-    RANK() OVER (PARTITION BY city ORDER BY total_purchases DESC) as rank,
-    DENSE_RANK() OVER (PARTITION BY city ORDER BY total_purchases DESC) as dense_rank
-FROM users
-ORDER BY city, total_purchases DESC;`,
+-- Tu código aquí
+-- Usa ROW_NUMBER, RANK, DENSE_RANK con PARTITION BY`,
         },
         {
             title: "CTEs (Common Table Expressions)",
@@ -291,23 +277,8 @@ Puedes tener múltiples CTEs separados por comas. Usa DATE_FORMAT para agrupar p
             languageId,
             order: 8,
             starterCode: `-- Análisis de ventas con múltiples CTEs
-WITH monthly_sales AS (
-    SELECT 
-        DATE_FORMAT(created_at, '%Y-%m') as month,
-        SUM(total) as total_sales,
-        COUNT(*) as order_count
-    FROM orders
-    GROUP BY DATE_FORMAT(created_at, '%Y-%m')
-),
-avg_sales AS (
-    SELECT AVG(total_sales) as avg_monthly_sales
-    FROM monthly_sales
-)
-SELECT ms.*, 
-    ms.total_sales - avgs.avg_monthly_sales as diff_from_avg
-FROM monthly_sales ms
-CROSS JOIN avg_sales avgs
-ORDER BY ms.month;`,
+-- Tu código aquí
+-- Usa WITH para crear monthly_sales y avg_sales`,
         },
         {
             title: "Indexes and Performance",
@@ -338,16 +309,12 @@ orders: id, user_id, created_at
             languageId,
             order: 9,
             starterCode: `-- Crear índices
-CREATE INDEX idx_users_email ON users(email);
-CREATE INDEX idx_users_city_age ON users(city, age);
-CREATE INDEX idx_orders_user_created ON orders(user_id, created_at);
+-- Tu código aquí
+-- Pista: CREATE INDEX nombre ON tabla(columna)
+
 
 -- Analizar plan de ejecución
-EXPLAIN SELECT u.name, COUNT(o.id)
-FROM users u
-LEFT JOIN orders o ON u.id = o.user_id
-WHERE u.email LIKE '%@gmail.com'
-GROUP BY u.id;`,
+-- EXPLAIN SELECT ...`,
         },
         {
             title: "Transactions",
@@ -379,23 +346,8 @@ Sin COMMIT, los cambios no son permanentes. Todas las operaciones deben completa
             languageId,
             order: 10,
             starterCode: `-- Transferencia bancaria con transacción
-START TRANSACTION;
-
--- Restar 500.00 del origen (ACC001)
-UPDATE accounts 
-SET balance = balance - 500.00, updated_at = CURRENT_TIMESTAMP
-WHERE account_id = 'ACC001' AND balance >= 500.00;
-
--- Sumar 500.00 al destino (ACC002)
-UPDATE accounts 
-SET balance = balance + 500.00, updated_at = CURRENT_TIMESTAMP
-WHERE account_id = 'ACC002';
-
--- Registrar transacción
-INSERT INTO transactions (from_account, to_account, amount, type)
-VALUES ('ACC001', 'ACC002', 500.00, 'TRANSFER');
-
-COMMIT;`,
+-- Tu código aquí
+-- START TRANSACTION, UPDATE cuentas, INSERT transacción, COMMIT`,
         },
 
         // ===== NIVEL DIFÍCIL (5 ejercicios) =====
@@ -430,17 +382,11 @@ Usa alias diferentes (e1, e2) para diferenciar las instancias. JOIN con e1.manag
             languageId,
             order: 11,
             starterCode: `-- Empleados que ganan más que su manager
-SELECT e1.name as employee, e1.salary, 
-       e2.name as manager, e2.salary as manager_salary
-FROM employees e1
-INNER JOIN employees e2 ON e1.manager_id = e2.id
-WHERE e1.salary > e2.salary;
+-- Tu código aquí
+
 
 -- Empleados en la misma ciudad (pares únicos)
-SELECT e1.name as employee1, e2.name as employee2, e1.city
-FROM employees e1
-INNER JOIN employees e2 ON e1.city = e2.city AND e1.id < e2.id
-ORDER BY e1.city, e1.name;`,
+-- Tu código aquí`,
         },
         {
             title: "Pivot Tables",
@@ -474,16 +420,8 @@ Usa SUM(CASE WHEN MONTH(sale_date) = 1 THEN amount ELSE 0 END) para cada mes.`,
             languageId,
             order: 12,
             starterCode: `-- Pivot de ventas mensuales por producto
-SELECT 
-    product_name,
-    SUM(CASE WHEN MONTH(sale_date) = 1 THEN amount ELSE 0 END) as Jan,
-    SUM(CASE WHEN MONTH(sale_date) = 2 THEN amount ELSE 0 END) as Feb,
-    SUM(CASE WHEN MONTH(sale_date) = 3 THEN amount ELSE 0 END) as Mar,
-    SUM(CASE WHEN MONTH(sale_date) = 4 THEN amount ELSE 0 END) as Apr,
-    SUM(amount) as Total
-FROM sales
-GROUP BY product_name
-ORDER BY Total DESC;`,
+-- Tu código aquí
+-- Pista: usa SUM(CASE WHEN MONTH(sale_date) = 1 THEN amount ELSE 0 END)`,
         },
         {
             title: "Recursive CTEs",
@@ -516,31 +454,10 @@ Estructura: WITH RECURSIVE cte AS (base UNION ALL recursiva) SELECT * FROM cte;`
             languageId,
             order: 13,
             starterCode: `-- Jerarquía completa de empleados
-WITH RECURSIVE employee_tree AS (
-    -- Base: CEOs sin manager
-    SELECT 
-        id, 
-        name, 
-        manager_id, 
-        1 as level,
-        CAST(name as CHAR(200)) as path
-    FROM employees 
-    WHERE manager_id IS NULL
-    
-    UNION ALL
-    
-    -- Recursión: empleados con manager en el árbol
-    SELECT 
-        e.id, 
-        e.name, 
-        e.manager_id, 
-        et.level + 1,
-        CONCAT(et.path, ' > ', e.name)
-    FROM employees e
-    INNER JOIN employee_tree et ON e.manager_id = et.id
-)
-SELECT * FROM employee_tree
-ORDER BY level, name;`,
+-- Tu código aquí
+-- Usa WITH RECURSIVE
+-- Base: CEOs sin manager
+-- Recursión: empleados con manager en el árbol`,
         },
         {
             title: "Query Optimization",
@@ -578,13 +495,8 @@ SELECT u.*,
 FROM users u
 WHERE EXISTS (SELECT 1 FROM orders WHERE user_id = u.id);
 
--- Consulta OPTIMIZADA - Reemplaza subqueries con JOIN
-SELECT u.id, u.name, u.email,
-    COUNT(o.id) as order_count,
-    COALESCE(SUM(o.total), 0) as total_spent
-FROM users u
-INNER JOIN orders o ON u.id = o.user_id
-GROUP BY u.id, u.name, u.email;`,
+-- Consulta OPTIMIZADA - Tu código aquí
+-- Reemplaza subqueries con JOIN y GROUP BY`,
         },
         {
             title: "Advanced Window Functions",
@@ -617,23 +529,8 @@ LAG/LEAD toman offset. ROWS BETWEEN define el marco de la ventana.`,
             languageId,
             order: 15,
             starterCode: `-- Análisis de tendencias de ingresos
-SELECT 
-    sale_date,
-    revenue,
-    LAG(revenue, 1) OVER (ORDER BY sale_date) as prev_day,
-    LEAD(revenue, 1) OVER (ORDER BY sale_date) as next_day,
-    revenue - LAG(revenue, 1) OVER (ORDER BY sale_date) as daily_growth,
-    FIRST_VALUE(revenue) OVER (ORDER BY sale_date) as first_revenue,
-    LAST_VALUE(revenue) OVER (
-        ORDER BY sale_date 
-        ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
-    ) as last_revenue,
-    AVG(revenue) OVER (
-        ORDER BY sale_date 
-        ROWS BETWEEN 6 PRECEDING AND CURRENT ROW
-    ) as moving_avg_7days
-FROM daily_revenue
-ORDER BY sale_date;`,
+-- Tu código aquí
+-- Usa LAG, LEAD, FIRST_VALUE, LAST_VALUE, AVG con OVER`,
         },
     ];
 
