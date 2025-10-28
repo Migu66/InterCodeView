@@ -34,7 +34,9 @@ export async function POST(req: NextRequest) {
         // Verificar que el usuario tenga contraseña (no sea OAuth)
         if (!user.password) {
             return NextResponse.json(
-                { error: "Esta cuenta usa inicio de sesión con proveedor externo" },
+                {
+                    error: "Esta cuenta usa inicio de sesión con proveedor externo",
+                },
                 { status: 401 }
             );
         }
