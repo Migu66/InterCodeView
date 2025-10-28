@@ -17,8 +17,15 @@ export default auth((req: AuthRequest) => {
         return NextResponse.redirect(url, 301);
     }
 
-    // Continuar con la solicitud normal
-    return NextResponse.next();
+    // Añadir headers de rendimiento
+    const response = NextResponse.next();
+
+    // Early hints para recursos críticos
+    if (process.env.NODE_ENV === "production") {
+        response.headers.set("X-DNS-Prefetch-Control", "on");
+    }
+
+    return response;
 });
 
 export const config = {

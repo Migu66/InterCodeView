@@ -43,15 +43,21 @@ export interface DotGridProps {
     style?: React.CSSProperties;
 }
 
-function hexToRgb(hex: string) {
-    const m = hex.match(/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i);
-    if (!m) return { r: 0, g: 0, b: 0 };
-    return {
-        r: parseInt(m[1], 16),
-        g: parseInt(m[2], 16),
-        b: parseInt(m[3], 16),
+const hexToRgb = (() => {
+    const cache = new Map<string, { r: number; g: number; b: number }>();
+    return (hex: string) => {
+        if (cache.has(hex)) return cache.get(hex)!;
+        const m = hex.match(/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i);
+        if (!m) return { r: 0, g: 0, b: 0 };
+        const result = {
+            r: parseInt(m[1], 16),
+            g: parseInt(m[2], 16),
+            b: parseInt(m[3], 16),
+        };
+        cache.set(hex, result);
+        return result;
     };
-}
+})();
 
 const DotGrid: React.FC<DotGridProps> = ({
     dotSize = 16,

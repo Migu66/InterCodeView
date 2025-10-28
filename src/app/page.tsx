@@ -2,14 +2,41 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import DotGrid from "@/components/ui/DotGrid";
-import AnimatedCodeWindow from "@/components/home/AnimatedCodeWindow";
-import FeaturesSection from "@/components/home/FeaturesSection";
-import LanguagesSection from "@/components/home/LanguagesSection";
-import Footer from "@/components/Footer";
+import dynamic from "next/dynamic";
 import PrimaryButton from "@/components/basics/PrimaryButton";
 import SecondaryButton from "@/components/basics/SecondaryButton";
 import { useAuth } from "@/contexts/AuthContext";
+
+// Lazy load de componentes pesados
+const DotGrid = dynamic(() => import("@/components/ui/DotGrid"), {
+    ssr: false,
+    loading: () => <div className="fixed inset-0 z-0 bg-black" />,
+});
+
+const AnimatedCodeWindow = dynamic(
+    () => import("@/components/home/AnimatedCodeWindow"),
+    {
+        ssr: false,
+    }
+);
+
+const FeaturesSection = dynamic(
+    () => import("@/components/home/FeaturesSection"),
+    {
+        ssr: false,
+    }
+);
+
+const LanguagesSection = dynamic(
+    () => import("@/components/home/LanguagesSection"),
+    {
+        ssr: false,
+    }
+);
+
+const Footer = dynamic(() => import("@/components/Footer"), {
+    ssr: false,
+});
 
 export default function Home() {
     const router = useRouter();

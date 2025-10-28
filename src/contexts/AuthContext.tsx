@@ -1,6 +1,13 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+    createContext,
+    useContext,
+    useEffect,
+    useState,
+    useCallback,
+    useMemo,
+} from "react";
 import { signOut as nextAuthSignOut } from "next-auth/react";
 
 interface User {
@@ -25,7 +32,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
 
-    const fetchUser = async () => {
+    const fetchUser = useCallback(async () => {
         try {
             const response = await fetch("/api/auth/me", {
                 credentials: "include",
@@ -43,9 +50,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
 
-    const logout = async () => {
+    const logout = useCallback(async () => {
         try {
             // Cerrar sesión en ambos sistemas (NextAuth y JWT tradicional)
             await nextAuthSignOut({ redirect: false });
@@ -58,18 +65,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         } catch (error) {
             console.error("Error al cerrar sesión:", error);
         }
-    };
+    }, []);
 
-    const refreshUser = async () => {
+    const refreshUser = useCallback(async () => {
         await fetchUser();
-    };
+    }, [fetchUser]);
 
     useEffect(() => {
         fetchUser();
-    }, []);
+    }, [fetchUser]);
+
+    const contextValue = useMemo(
+        () => ({ user, loading, logout, refreshUser }),
+        [user, loading, logout, refreshUser]
+    );
 
     return (
-        <AuthContext.Provider value={{ user, loading, logout, refreshUser }}>
+        <AuthContext.Provider value={contextValue}>
             {children}
         </AuthContext.Provider>
     );

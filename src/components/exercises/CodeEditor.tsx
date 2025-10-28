@@ -1,8 +1,25 @@
 "use client";
 
-import { Editor } from "@monaco-editor/react";
+import dynamic from "next/dynamic";
 import { useState } from "react";
 import { FiCode, FiMaximize2, FiMinimize2, FiPlay } from "react-icons/fi";
+
+// Lazy load del editor con loading fallback
+const Editor = dynamic(
+    () =>
+        import("@monaco-editor/react").then((mod) => ({ default: mod.Editor })),
+    {
+        ssr: false,
+        loading: () => (
+            <div className="flex items-center justify-center h-full bg-[#1e1e1e]">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#00ff9d] mx-auto mb-3"></div>
+                    <p className="text-gray-400 text-sm">Cargando editor...</p>
+                </div>
+            </div>
+        ),
+    }
+);
 
 interface CodeEditorProps {
     language: string;
@@ -69,8 +86,13 @@ export default function CodeEditor({
                                 </>
                             ) : (
                                 <>
-                                    <FiPlay size={16} className="cursor-pointer"/>
-                                    <span className="cursor-pointer">Ejecutar Código</span>
+                                    <FiPlay
+                                        size={16}
+                                        className="cursor-pointer"
+                                    />
+                                    <span className="cursor-pointer">
+                                        Ejecutar Código
+                                    </span>
                                 </>
                             )}
                         </button>

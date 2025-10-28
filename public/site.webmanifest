@@ -1,0 +1,17 @@
+{
+    "name": "InterCodeView",
+    "short_name": "InterCodeView",
+    "description": "Plataforma de entrevistas técnicas - Mejora tus habilidades de programación",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#000000",
+    "theme_color": "#00ff9d",
+    "orientation": "portrait-primary",
+    "icons": [
+        {
+            "src": "/medalla.ico",
+            "sizes": "any",
+            "type": "image/x-icon"
+        }
+    ]
+}

@@ -242,40 +242,49 @@
 /* Animation Classes */
 .animate-float {
     animation: float linear infinite;
+    will-change: transform, opacity;
 }
 
 .animate-glitch-1 {
     animation: glitch-1 0.3s infinite;
+    will-change: transform;
 }
 
 .animate-glitch-2 {
     animation: glitch-2 0.3s infinite;
+    will-change: transform;
 }
 
 .animate-gradient {
     background-size: 200% auto;
     animation: gradient-x 3s ease infinite;
+    will-change: background-position;
 }
 
 .animate-fade-in-up {
     animation: fade-in-up 1s ease-out forwards;
     opacity: 0;
+    will-change: transform, opacity;
 }
 
 .animate-pulse-slow {
     animation: pulse-slow 3s ease-in-out infinite;
+    will-change: opacity;
 }
 
 .animate-blob {
     animation: blob 7s ease-in-out infinite;
+    will-change: transform;
 }
 
 .animate-slide {
     animation: slide 8s linear infinite;
+    will-change: transform;
 }
 
 .animate-blob-slow {
     animation: blob-slow 10s ease-in-out infinite;
+    will-change: border-radius;
 }
 
 .animate-digital-rain {
@@ -605,6 +614,49 @@ html {
         opacity: 0;
         transform: scale(0.95) translateY(-10px);
     }
+}
+
+/* Performance Optimizations */
+@layer utilities {
+    /* Utilidades de optimización de rendimiento */
+    .gpu-accelerate {
+        transform: translateZ(0);
+        will-change: transform;
+    }
+
+    .contain-paint {
+        contain: paint;
+    }
+
+    .contain-layout {
+        contain: layout;
+    }
+
+    .contain-strict {
+        contain: strict;
+    }
+
+    .content-visibility-auto {
+        content-visibility: auto;
+    }
+
+    /* Suavizado de fuentes mejorado */
+    .font-smooth {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
+    }
+}
+
+/* Optimizaciones globales */
+* {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+img,
+video {
+    content-visibility: auto;
 }
 
 .animate-fadeIn {
