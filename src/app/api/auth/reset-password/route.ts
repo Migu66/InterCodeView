@@ -52,8 +52,8 @@ export async function POST(request: NextRequest) {
         // Buscar usuario con el token de reset
         const user = await prisma.user.findFirst({
             where: {
-                resetPasswordToken: token,
-                resetPasswordExpiry: {
+                resetToken: token,
+                resetTokenExpiry: {
                     gte: new Date(), // El token no debe haber expirado
                 },
             },
@@ -76,8 +76,8 @@ export async function POST(request: NextRequest) {
             where: { id: user.id },
             data: {
                 password: hashedPassword,
-                resetPasswordToken: null,
-                resetPasswordExpiry: null,
+                resetToken: null,
+                resetTokenExpiry: null,
             },
         });
 

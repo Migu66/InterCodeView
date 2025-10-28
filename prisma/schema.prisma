@@ -9,20 +9,20 @@ datasource db {
 }
 
 model User {
-  id                  String    @id @default(cuid())
-  name                String
-  email               String    @unique
-  password            String?
-  provider            String    @default("credentials")
-  providerId          String?
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime  @updatedAt
-  emailVerified       Boolean   @default(false)
-  tokenExpiry         DateTime?
-  verificationToken   String?
-  resetPasswordExpiry DateTime?
-  resetPasswordToken  String?
-  avatarUrl           String?
+  id                 String    @id @default(cuid())
+  name               String
+  email              String    @unique
+  password           String?
+  emailVerified      Boolean   @default(false)
+  verificationToken  String?
+  tokenExpiry        DateTime?
+  resetToken         String?
+  resetTokenExpiry   DateTime?
+  avatarUrl          String?
+  provider           String?
+  providerId         String?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
 
   @@unique([provider, providerId])
   @@map("users")
@@ -47,14 +47,14 @@ model Exercise {
   id          String     @id @default(cuid())
   title       String
   description String
-  statement   String
-  starterCode String?
   difficulty  Difficulty
   languageId  String
   order       Int        @default(0)
   isActive    Boolean    @default(true)
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
+  starterCode String?
+  statement   String
   language    Language   @relation(fields: [languageId], references: [id], onDelete: Cascade)
 
   @@index([languageId])
