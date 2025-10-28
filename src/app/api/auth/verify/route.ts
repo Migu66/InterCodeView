@@ -1,9 +1,29 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@/generated/prisma";
+import { checkRateLimit, rateLimitConfigs } from "@/lib/rate-limit";
 
 const prisma = new PrismaClient();
 
 export async function POST(request: NextRequest) {
+    // Aplicar rate limiting
+    const rateLimit = await checkRateLimit(
+        request,
+        rateLimitConfigs.emailVerification
+    );
+
+    if (!rateLimit.success) {
+        return NextResponse.json(
+            { error: rateLimit.message },
+            {
+                status: 429,
+                headers: {
+                    "X-RateLimit-Remaining": rateLimit.remaining.toString(),
+                    "Retry-After": "3600", // 1 hora
+                },
+            }
+        );
+    }
+
     try {
         const body = await request.json();
         const { token, email } = body;

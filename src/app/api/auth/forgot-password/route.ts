@@ -1,10 +1,30 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@/generated/prisma";
 import { sendPasswordResetEmail, generateVerificationToken } from "@/lib/email";
+import { checkRateLimit, rateLimitConfigs } from "@/lib/rate-limit";
 
 const prisma = new PrismaClient();
 
 export async function POST(request: NextRequest) {
+    // Aplicar rate limiting más estricto para reset de contraseña
+    const rateLimit = await checkRateLimit(
+        request,
+        rateLimitConfigs.passwordReset
+    );
+
+    if (!rateLimit.success) {
+        return NextResponse.json(
+            { error: rateLimit.message },
+            {
+                status: 429,
+                headers: {
+                    "X-RateLimit-Remaining": rateLimit.remaining.toString(),
+                    "Retry-After": "3600", // 1 hora
+                },
+            }
+        );
+    }
+
     try {
         const { email } = await request.json();
 

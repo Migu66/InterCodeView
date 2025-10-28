@@ -1,11 +1,12 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth-next";
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
+import { checkRateLimit, rateLimitConfigs } from "@/lib/rate-limit";
 
-export async function DELETE(request: Request) {
+export async function DELETE(request: NextRequest) {
     try {
         let userId: string | null = null;
 
@@ -51,6 +52,26 @@ export async function DELETE(request: Request) {
             return NextResponse.json(
                 { message: "No autenticado" },
                 { status: 401 }
+            );
+        }
+
+        // Aplicar rate limiting usando el userId
+        const rateLimit = await checkRateLimit(
+            request,
+            rateLimitConfigs.sensitive,
+            userId
+        );
+
+        if (!rateLimit.success) {
+            return NextResponse.json(
+                { error: rateLimit.message },
+                {
+                    status: 429,
+                    headers: {
+                        "X-RateLimit-Remaining": rateLimit.remaining.toString(),
+                        "Retry-After": "60",
+                    },
+                }
             );
         }
 

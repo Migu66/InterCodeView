@@ -2,10 +2,27 @@ import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@/generated/prisma";
 import bcrypt from "bcryptjs";
 import { generateVerificationToken, sendVerificationEmail } from "@/lib/email";
+import { checkRateLimit, rateLimitConfigs } from "@/lib/rate-limit";
 
 const prisma = new PrismaClient();
 
 export async function POST(request: NextRequest) {
+    // Aplicar rate limiting
+    const rateLimit = await checkRateLimit(request, rateLimitConfigs.auth);
+
+    if (!rateLimit.success) {
+        return NextResponse.json(
+            { error: rateLimit.message },
+            {
+                status: 429,
+                headers: {
+                    "X-RateLimit-Remaining": rateLimit.remaining.toString(),
+                    "Retry-After": "60",
+                },
+            }
+        );
+    }
+
     try {
         const body = await request.json();
         const { name, email, password } = body;
@@ -110,11 +127,13 @@ export async function POST(request: NextRequest) {
         );
 
         if (!emailResult.success) {
-			return NextResponse.json(
-				{ error: "Error al enviar el email de verificación. Por favor, intenta de nuevo." },
-				{ status: 500 }
-			);
-		}
+            return NextResponse.json(
+                {
+                    error: "Error al enviar el email de verificación. Por favor, intenta de nuevo.",
+                },
+                { status: 500 }
+            );
+        }
 
         return NextResponse.json(
             {

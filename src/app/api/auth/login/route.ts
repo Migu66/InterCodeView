@@ -3,10 +3,27 @@ import { PrismaClient } from "@/generated/prisma";
 import bcrypt from "bcryptjs";
 import { sendVerificationEmail, generateVerificationToken } from "@/lib/email";
 import { generateToken, setAuthCookie } from "@/lib/auth";
+import { checkRateLimit, rateLimitConfigs } from "@/lib/rate-limit";
 
 const prisma = new PrismaClient();
 
 export async function POST(req: NextRequest) {
+    // Aplicar rate limiting
+    const rateLimit = await checkRateLimit(req, rateLimitConfigs.auth);
+
+    if (!rateLimit.success) {
+        return NextResponse.json(
+            { error: rateLimit.message },
+            {
+                status: 429,
+                headers: {
+                    "X-RateLimit-Remaining": rateLimit.remaining.toString(),
+                    "Retry-After": "60",
+                },
+            }
+        );
+    }
+
     try {
         const { email, password, rememberMe } = await req.json();
 
