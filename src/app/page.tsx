@@ -6,6 +6,7 @@ import dynamic from "next/dynamic";
 import PrimaryButton from "@/components/basics/PrimaryButton";
 import SecondaryButton from "@/components/basics/SecondaryButton";
 import { useAuth } from "@/contexts/AuthContext";
+import Script from "next/script";
 
 // Lazy load de componentes pesados
 const DotGrid = dynamic(() => import("@/components/ui/DotGrid"), {
@@ -80,6 +81,41 @@ export default function Home() {
 
     return (
         <div className="min-h-screen bg-black text-white overflow-hidden relative">
+            {/* JSON-LD para SEO */}
+            <Script
+                id="schema-org"
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{
+                    __html: JSON.stringify({
+                        "@context": "https://schema.org",
+                        "@type": "WebApplication",
+                        name: "InterCodeView",
+                        description:
+                            "Plataforma interactiva para preparar entrevistas técnicas de programación con ejercicios en múltiples lenguajes",
+                        url: "https://inter-code-view.vercel.app",
+                        applicationCategory: "EducationalApplication",
+                        operatingSystem: "Web",
+                        offers: {
+                            "@type": "Offer",
+                            price: "0",
+                            priceCurrency: "USD",
+                        },
+                        featureList: [
+                            "Ejercicios de programación interactivos",
+                            "Corrección con IA",
+                            "Múltiples lenguajes de programación",
+                            "Preparación para entrevistas técnicas",
+                        ],
+                        inLanguage: "es",
+                        aggregateRating: {
+                            "@type": "AggregateRating",
+                            ratingValue: "5",
+                            ratingCount: "1",
+                        },
+                    }),
+                }}
+            />
+
             {/* DotGrid Background - Fixed Full Page */}
             <div className="fixed inset-0 z-0">
                 <DotGrid

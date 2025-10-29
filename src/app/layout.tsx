@@ -14,36 +14,66 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+    metadataBase: new URL("https://inter-code-view.vercel.app"),
     title: {
-        default: "InterCodeView",
+        default:
+            "InterCodeView - Plataforma de Entrevistas Técnicas de Programación",
         template: "%s | InterCodeView",
     },
     description:
-        "Plataforma de entrevistas técnicas - Mejora tus habilidades de programación con ejercicios interactivos",
+        "Plataforma interactiva para preparar entrevistas técnicas de programación. Practica con ejercicios de código en múltiples lenguajes: Python, JavaScript, Java, C++, TypeScript y más. Mejora tus habilidades de coding.",
     keywords: [
-        "programación",
         "entrevistas técnicas",
+        "programación",
         "coding",
-        "práctica",
-        "ejercicios",
+        "ejercicios de programación",
+        "práctica de código",
+        "preparación entrevistas",
+        "leetcode",
+        "hackerrank",
+        "Python",
+        "JavaScript",
+        "Java",
+        "TypeScript",
+        "C++",
+        "desarrollo de software",
     ],
     authors: [{ name: "InterCodeView" }],
+    creator: "InterCodeView",
+    publisher: "InterCodeView",
     icons: {
         icon: "/medalla.ico",
     },
     openGraph: {
         type: "website",
         locale: "es_ES",
-        url: "https://intercodeview.com",
-        title: "InterCodeView",
-        description: "Plataforma de entrevistas técnicas",
+        url: "https://inter-code-view.vercel.app",
+        title: "InterCodeView - Plataforma de Entrevistas Técnicas de Programación",
+        description:
+            "Practica y mejora tus habilidades de programación con ejercicios interactivos para entrevistas técnicas en múltiples lenguajes.",
         siteName: "InterCodeView",
+    },
+    twitter: {
+        card: "summary_large_image",
+        title: "InterCodeView - Entrevistas Técnicas de Programación",
+        description:
+            "Plataforma interactiva para preparar entrevistas técnicas con ejercicios de código.",
     },
     robots: {
         index: true,
         follow: true,
+        googleBot: {
+            index: true,
+            follow: true,
+            "max-video-preview": -1,
+            "max-image-preview": "large",
+            "max-snippet": -1,
+        },
     },
     manifest: "/site.webmanifest",
+    alternates: {
+        canonical: "https://inter-code-view.vercel.app",
+    },
 };
 
 export default function RootLayout({
