@@ -42,7 +42,13 @@ export const metadata: Metadata = {
     creator: "InterCodeView",
     publisher: "InterCodeView",
     icons: {
-        icon: "/medalla.ico",
+        icon: [
+            { url: "/medalla.ico", sizes: "any" },
+            { url: "/medalla.ico", sizes: "16x16", type: "image/x-icon" },
+            { url: "/medalla.ico", sizes: "32x32", type: "image/x-icon" },
+        ],
+        shortcut: "/medalla.ico",
+        apple: "/medalla.ico",
     },
     openGraph: {
         type: "website",
