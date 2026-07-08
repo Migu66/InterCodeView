@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import AuthGuard from "@/components/AuthGuard";
 import Navbar from "@/components/ui/Navbar";
-import DotGrid from "@/components/ui/DotGrid";
+import Cursor from "@/components/landing/Cursor";
 import {
     CodeEditor,
     ExerciseStatement,
@@ -12,7 +12,6 @@ import {
     SuccessAnimation,
     EvaluationFeedback,
 } from "@/components/exercises";
-import { FiArrowLeft, FiCheck } from "react-icons/fi";
 
 interface Exercise {
     id: string;
@@ -41,6 +40,13 @@ interface EvaluationResult {
     isPerfect: boolean;
     suggestions: string[];
 }
+
+// Dificultad → señal (hueso / ámbar / rojo)
+const DIFFICULTY_SIGNAL: Record<string, { tag: string; color: string }> = {
+    EASY: { tag: "FÁCIL", color: "#eae0cc" },
+    MEDIUM: { tag: "MEDIO", color: "#ffb000" },
+    HARD: { tag: "DIFÍCIL", color: "#ff3d00" },
+};
 
 export default function ExercisePage() {
     const params = useParams();
@@ -179,7 +185,7 @@ export default function ExercisePage() {
             setTerminalOutput(
                 (prev) =>
                     prev +
-                    "\n❌ Error al ejecutar el código\n" +
+                    "\n✗ Error al ejecutar el código\n" +
                     (err instanceof Error ? err.message : "Error desconocido")
             );
         } finally {
@@ -296,60 +302,16 @@ export default function ExercisePage() {
         }
     };
 
-    const getDifficultyColor = (difficulty: string) => {
-        switch (difficulty) {
-            case "EASY":
-                return "text-green-500";
-            case "MEDIUM":
-                return "text-yellow-500";
-            case "HARD":
-                return "text-red-500";
-            default:
-                return "text-gray-500";
-        }
-    };
-
-    const getDifficultyText = (difficulty: string) => {
-        switch (difficulty) {
-            case "EASY":
-                return "Fácil";
-            case "MEDIUM":
-                return "Medio";
-            case "HARD":
-                return "Difícil";
-            default:
-                return difficulty;
-        }
-    };
-
     if (loading) {
         return (
             <AuthGuard>
-                <div className="min-h-screen bg-black text-white relative overflow-hidden">
-                    <div className="fixed inset-0 z-0">
-                        <DotGrid
-                            dotSize={5}
-                            gap={15}
-                            baseColor="#271e37"
-                            activeColor="#00ff9d"
-                            proximity={100}
-                            shockRadius={180}
-                            shockStrength={2}
-                            resistance={1500}
-                            returnDuration={3}
-                        />
-                    </div>
-
-                    <div className="relative z-10">
-                        <Navbar />
-                        <div className="pt-24 px-6 flex items-center justify-center min-h-[60vh]">
-                            <div className="text-center">
-                                <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-[#00ff9d] mx-auto mb-4"></div>
-                                <p className="text-gray-400">
-                                    Cargando ejercicio...
-                                </p>
-                            </div>
-                        </div>
+                <div className="icv relative min-h-screen">
+                    <div className="icv-scan" aria-hidden="true" />
+                    <Navbar />
+                    <div className="flex min-h-[70vh] items-center justify-center">
+                        <p className="icv-label icv-blink !text-[#ffb000]">
+                            ▮ PREPARANDO CABINA
+                        </p>
                     </div>
                 </div>
             </AuthGuard>
@@ -359,182 +321,167 @@ export default function ExercisePage() {
     if (error || !exercise || !language) {
         return (
             <AuthGuard>
-                <div className="min-h-screen bg-black text-white relative overflow-hidden">
-                    <div className="fixed inset-0 z-0">
-                        <DotGrid
-                            dotSize={5}
-                            gap={15}
-                            baseColor="#271e37"
-                            activeColor="#00ff9d"
-                            proximity={100}
-                            shockRadius={180}
-                            shockStrength={2}
-                            resistance={1500}
-                            returnDuration={3}
-                        />
-                    </div>
-
-                    <div className="relative z-10">
-                        <Navbar />
-                        <div className="pt-24 px-6 flex items-center justify-center min-h-[60vh]">
-                            <div className="text-center">
-                                <p className="text-red-500 text-xl mb-4">
-                                    {error || "Ejercicio no encontrado"}
-                                </p>
-                                <button
-                                    onClick={() =>
-                                        router.push(`/languages/${languageId}`)
-                                    }
-                                    className="px-6 py-3 bg-[#00ff9d] text-black rounded-lg font-semibold hover:bg-[#00cc7d] transition-colors"
-                                >
-                                    Volver a ejercicios
-                                </button>
-                            </div>
-                        </div>
+                <div className="icv relative min-h-screen">
+                    <Cursor />
+                    <div className="icv-scan" aria-hidden="true" />
+                    <Navbar />
+                    <div className="flex min-h-[70vh] flex-col items-center justify-center gap-6 px-4">
+                        <p className="icv-label !text-[#ff3d00]">
+                            <span className="icv-blink mr-2">▮</span>
+                            FALLO DE LECTURA —{" "}
+                            {(error || "EJERCICIO NO ENCONTRADO").toUpperCase()}
+                        </p>
+                        <button
+                            onClick={() =>
+                                router.push(`/languages/${languageId}`)
+                            }
+                            className="icv-link"
+                            data-cursor-label="VOLVER"
+                        >
+                            ← VOLVER AL MANIFIESTO
+                        </button>
                     </div>
                 </div>
             </AuthGuard>
         );
     }
 
+    const signal = DIFFICULTY_SIGNAL[exercise.difficulty] ?? {
+        tag: exercise.difficulty,
+        color: "#97896d",
+    };
+
     return (
         <AuthGuard>
-            <div className="min-h-screen bg-black text-white relative overflow-hidden">
-                {/* DotGrid Background */}
-                <div className="fixed inset-0 z-0">
-                    <DotGrid
-                        dotSize={5}
-                        gap={15}
-                        baseColor="#271e37"
-                        activeColor="#00ff9d"
-                        proximity={100}
-                        shockRadius={180}
-                        shockStrength={2}
-                        resistance={1500}
-                        returnDuration={3}
-                    />
-                </div>
+            <div className="icv relative min-h-screen">
+                <Cursor />
+                <div className="icv-scan" aria-hidden="true" />
+                <Navbar />
 
-                <div className="relative z-10">
-                    <Navbar />
+                {/* Cabecera de misión */}
+                <div className="px-4 pt-28 md:px-10">
+                    <div className="mx-auto max-w-[1800px]">
+                        <button
+                            onClick={() =>
+                                router.push(`/languages/${languageId}`)
+                            }
+                            className="icv-link"
+                            data-cursor-label="VOLVER"
+                        >
+                            ← MÓDULO {language.name.toUpperCase()}
+                        </button>
 
-                    {/* Header */}
-                    <div className="pt-24 px-6">
-                        <div className="max-w-[1800px] mx-auto">
+                        <div className="mb-8 mt-6 flex flex-wrap items-end justify-between gap-6 border-b border-[rgba(234,224,204,0.16)] pb-8">
+                            <div>
+                                <p className="icv-label mb-3">
+                                    <span className="mr-2 inline-block h-2 w-2 bg-[#ffb000] align-middle" />
+                                    CABINA — SIMULACIÓN EN CURSO
+                                </p>
+                                <h1 className="icv-display text-[clamp(1.4rem,3.5vw,2.6rem)] text-[#eae0cc]">
+                                    {exercise.title}
+                                </h1>
+                                <p className="mt-3 text-[0.65rem] tracking-[0.2em]">
+                                    <span style={{ color: signal.color }}>
+                                        [{signal.tag}]
+                                    </span>
+                                    <span className="mx-3 text-[#97896d]">
+                                        ·
+                                    </span>
+                                    <span className="text-[#97896d]">
+                                        {language.name.toUpperCase()}
+                                    </span>
+                                </p>
+                            </div>
+
                             <button
-                                onClick={() =>
-                                    router.push(`/languages/${languageId}`)
-                                }
-                                className="flex items-center gap-2 text-gray-400 hover:text-[#00ff9d] transition-colors mb-6 mt-5"
+                                onClick={handleSubmit}
+                                disabled={isSubmitting}
+                                data-cursor-label="AUDITAR"
+                                className="icv-btn !px-8 !py-4 !text-[0.7rem] disabled:pointer-events-none disabled:opacity-40"
                             >
-                                <FiArrowLeft size={20} />
-                                <span>Volver a {language.name}</span>
+                                <span
+                                    className="icv-btn__bg"
+                                    aria-hidden="true"
+                                />
+                                <span className="icv-btn__label">
+                                    <span>
+                                        {isSubmitting
+                                            ? "Transmitiendo…"
+                                            : "Enviar a auditoría →"}
+                                    </span>
+                                    <span aria-hidden="true">
+                                        {isSubmitting
+                                            ? "Transmitiendo…"
+                                            : "Enviar a auditoría →"}
+                                    </span>
+                                </span>
                             </button>
-
-                            <div className="flex items-center justify-between mb-8">
-                                <div>
-                                    <h1 className="text-4xl font-bold mb-2">
-                                        {exercise.title}
-                                    </h1>
-                                    <div className="flex items-center gap-4">
-                                        <span
-                                            className={`text-sm font-semibold ml-2 mt-1 ${getDifficultyColor(exercise.difficulty)}`}
-                                        >
-                                            {getDifficultyText(
-                                                exercise.difficulty
-                                            )}
-                                        </span>
-                                        <span className="text-gray-500">•</span>
-                                        <span className="text-gray-400">
-                                            {language.name}
-                                        </span>
-                                    </div>
-                                </div>
-
-                                <button
-                                    onClick={handleSubmit}
-                                    disabled={isSubmitting}
-                                    className="flex items-center gap-2 px-6 py-3 bg-[#00ff9d] text-black rounded-lg font-semibold hover:bg-[#00cc7d] transition-colors disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
-                                >
-                                    {isSubmitting ? (
-                                        <>
-                                            <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-black"></div>
-                                            <span>Enviando...</span>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <FiCheck size={20} />
-                                            <span>Resolver Ejercicio</span>
-                                        </>
-                                    )}
-                                </button>
-                            </div>
                         </div>
                     </div>
+                </div>
 
-                    {/* Main Content - Split View */}
-                    <div className="px-6 pb-12">
-                        <div className="max-w-[1800px] mx-auto">
-                            <div className="grid grid-cols-1 lg:grid-cols-10 gap-6">
-                                {/* Left Panel - Exercise Statement (2/5 = 40%) */}
-                                <div className="lg:col-span-3">
-                                    <ExerciseStatement
-                                        description={exercise.statement}
-                                        difficulty={exercise.difficulty}
-                                    />
-                                </div>
+                {/* Contenido principal - Vista dividida */}
+                <div className="px-4 pb-16 md:px-10">
+                    <div className="mx-auto max-w-[1800px]">
+                        <div className="grid grid-cols-1 gap-4 lg:grid-cols-10">
+                            {/* Panel izquierdo - Plan de vuelo */}
+                            <div className="lg:col-span-3">
+                                <ExerciseStatement
+                                    description={exercise.statement}
+                                    difficulty={exercise.difficulty}
+                                />
+                            </div>
 
-                                {/* Right Panel - Code Editor y Terminal (3/5 = 60%) */}
-                                <div className="lg:col-span-7 space-y-4">
-                                    {/* Code Editor */}
-                                    <CodeEditor
-                                        language={language.slug}
-                                        value={code}
-                                        onChange={handleCodeChange}
-                                        onRun={
-                                            language.slug !== "sql"
-                                                ? handleRunCode
-                                                : undefined
+                            {/* Panel derecho - Editor y consola */}
+                            <div className="space-y-4 lg:col-span-7">
+                                {/* Editor */}
+                                <CodeEditor
+                                    language={language.slug}
+                                    value={code}
+                                    onChange={handleCodeChange}
+                                    onRun={
+                                        language.slug !== "sql"
+                                            ? handleRunCode
+                                            : undefined
+                                    }
+                                    isRunning={isRunning}
+                                    isTerminalVisible={
+                                        language.slug !== "sql"
+                                            ? isTerminalVisible
+                                            : false
+                                    }
+                                />
+
+                                {/* Informe de auditoría */}
+                                {evaluationResult && (
+                                    <EvaluationFeedback
+                                        key={evaluationKey}
+                                        status={evaluationResult.status}
+                                        message={evaluationResult.message}
+                                        score={evaluationResult.score}
+                                        feedback={evaluationResult.feedback}
+                                        suggestions={
+                                            evaluationResult.suggestions
                                         }
+                                    />
+                                )}
+
+                                {/* Consola de salida - Solo para lenguajes que no son SQL */}
+                                {language.slug !== "sql" && (
+                                    <TerminalOutput
+                                        output={terminalOutput}
                                         isRunning={isRunning}
-                                        isTerminalVisible={
-                                            language.slug !== "sql"
-                                                ? isTerminalVisible
-                                                : false
-                                        }
+                                        isVisible={isTerminalVisible}
+                                        onToggle={handleToggleTerminal}
+                                        onClear={handleClearTerminal}
                                     />
-
-                                    {/* Evaluation Feedback */}
-                                    {evaluationResult && (
-                                        <EvaluationFeedback
-                                            key={evaluationKey}
-                                            status={evaluationResult.status}
-                                            message={evaluationResult.message}
-                                            score={evaluationResult.score}
-                                            feedback={evaluationResult.feedback}
-                                            suggestions={
-                                                evaluationResult.suggestions
-                                            }
-                                        />
-                                    )}
-
-                                    {/* Terminal Output - Solo para lenguajes que no son SQL */}
-                                    {language.slug !== "sql" && (
-                                        <TerminalOutput
-                                            output={terminalOutput}
-                                            isRunning={isRunning}
-                                            isVisible={isTerminalVisible}
-                                            onToggle={handleToggleTerminal}
-                                            onClear={handleClearTerminal}
-                                        />
-                                    )}
-                                </div>
+                                )}
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Success Animation */}
+                {/* Sello de misión cumplida */}
                 {showSuccessAnimation && (
                     <SuccessAnimation
                         score={evaluationScore}

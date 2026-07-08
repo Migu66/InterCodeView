@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import DotGrid from "@/components/ui/DotGrid";
+import BootScreen from "@/components/icv/BootScreen";
 
 interface AuthGuardProps {
     children: React.ReactNode;
@@ -43,29 +43,7 @@ export default function AuthGuard({ children }: AuthGuardProps) {
 
     // Mientras se verifica la autenticación, mostrar un loader
     if (isAuthenticated === null) {
-        return (
-            <div className="min-h-screen bg-black text-white overflow-hidden relative flex items-center justify-center">
-                <div className="fixed inset-0 z-0">
-                    <DotGrid
-                        dotSize={5}
-                        gap={15}
-                        baseColor="#271e37"
-                        activeColor="#00ff9d"
-                        proximity={100}
-                        shockRadius={180}
-                        shockStrength={2}
-                        resistance={1500}
-                        returnDuration={3}
-                    />
-                </div>
-                <div className="relative z-10 text-center">
-                    <div className="w-16 h-16 border-4 border-green-400 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                    <p className="text-gray-400 text-lg">
-                        Verificando acceso...
-                    </p>
-                </div>
-            </div>
-        );
+        return <BootScreen label="VERIFICANDO ACCESO" />;
     }
 
     // Si no está autenticado, no mostrar nada (ya se redirigió)

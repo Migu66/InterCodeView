@@ -5,7 +5,7 @@ import AuthGuard from "@/components/AuthGuard";
 import Navbar from "@/components/ui/Navbar";
 import { useAuth } from "@/contexts/AuthContext";
 import Toast from "@/components/ui/Toast";
-import DotGrid from "@/components/ui/DotGrid";
+import Cursor from "@/components/landing/Cursor";
 import AvatarSection from "@/components/profile/AvatarSection";
 import ProfileInfoSection from "@/components/profile/ProfileInfoSection";
 import SecuritySection from "@/components/profile/SecuritySection";
@@ -267,55 +267,57 @@ export default function ProfilePage() {
 
     return (
         <AuthGuard>
-            <div className="min-h-screen bg-black text-white overflow-hidden relative">
-                {/* DotGrid Background - Fixed Full Page */}
-                <div className="fixed inset-0 z-0">
-                    <DotGrid
-                        dotSize={5}
-                        gap={15}
-                        baseColor="#271e37"
-                        activeColor="#00ff9d"
-                        proximity={100}
-                        shockRadius={180}
-                        shockStrength={2}
-                        resistance={1500}
-                        returnDuration={3}
-                    />
-                </div>
+            <div className="icv relative min-h-screen">
+                <Cursor />
+                <div className="icv-scan" aria-hidden="true" />
+                <Navbar />
 
-                {/* Main Content */}
-                <div className="relative z-10">
-                    <Navbar />
-                    <div className="pt-24 px-6 pb-12 max-w-5xl mx-auto">
-                        {/* Avatar Section */}
-                        <AvatarSection
-                            user={user}
-                            onAvatarChange={handleAvatarChange}
-                            onRemoveAvatar={handleRemoveAvatar}
-                            isUploading={isUploading}
-                        />
+                <main className="px-4 pb-24 pt-32 md:px-10 lg:px-24">
+                    {/* Cabecera del expediente */}
+                    <header className="mb-14">
+                        <p className="icv-label mb-6">
+                            <span className="mr-2 inline-block h-2 w-2 bg-[#ffb000] align-middle" />
+                            EXP/07 — FICHA DEL CANDIDATO
+                        </p>
+                        <h1 className="icv-display text-[clamp(2.4rem,8vw,6rem)]">
+                            <span className="text-[#eae0cc]">Expe</span>
+                            <span className="icv-outline-amber">diente.</span>
+                        </h1>
+                    </header>
 
-                        {/* Profile Information */}
-                        <ProfileInfoSection
-                            user={user}
-                            onProfileUpdate={handleProfileUpdate}
-                        />
-
-                        {/* Security Section - Solo mostrar si el usuario tiene contraseña */}
-                        {user?.hasPassword && (
-                            <SecuritySection
-                                onPasswordUpdate={handlePasswordUpdate}
+                    {/* Dossier: foto a la izquierda, secciones a la derecha */}
+                    <div className="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:gap-8">
+                        <div className="lg:col-span-4">
+                            <AvatarSection
+                                user={user}
+                                onAvatarChange={handleAvatarChange}
+                                onRemoveAvatar={handleRemoveAvatar}
+                                isUploading={isUploading}
                             />
-                        )}
+                        </div>
 
-                        {/* Delete Account Section - Mostrar siempre */}
-                        <DeleteAccountSection
-                            onDeleteAccount={handleDeleteAccount}
-                            onVerifyPassword={handleVerifyPassword}
-                            hasPassword={!!user?.hasPassword}
-                        />
+                        <div className="space-y-4 lg:col-span-8">
+                            <ProfileInfoSection
+                                user={user}
+                                onProfileUpdate={handleProfileUpdate}
+                            />
+
+                            {/* Seguridad - Solo mostrar si el usuario tiene contraseña */}
+                            {user?.hasPassword && (
+                                <SecuritySection
+                                    onPasswordUpdate={handlePasswordUpdate}
+                                />
+                            )}
+
+                            {/* Zona roja - Mostrar siempre */}
+                            <DeleteAccountSection
+                                onDeleteAccount={handleDeleteAccount}
+                                onVerifyPassword={handleVerifyPassword}
+                                hasPassword={!!user?.hasPassword}
+                            />
+                        </div>
                     </div>
-                </div>
+                </main>
 
                 {toast && (
                     <Toast

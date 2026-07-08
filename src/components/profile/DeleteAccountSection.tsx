@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Trash2, AlertTriangle } from "lucide-react";
+import Corners from "@/components/landing/Corners";
+import ConsoleButton from "@/components/icv/ConsoleButton";
 import DeleteAccountModal from "./DeleteAccountModal";
 
 interface DeleteAccountSectionProps {
@@ -55,117 +56,94 @@ export default function DeleteAccountSection({
     };
 
     return (
-        <div className="bg-black/40 backdrop-blur-sm rounded-2xl p-8 border-2 border-red-500/20 hover:border-red-500/40 transition-all duration-300 relative overflow-hidden group mt-5">
-            {/* Efecto de brillo en hover */}
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-red-500/5 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
-
-            <div className="relative z-10">
-                <div className="flex items-center justify-between mb-8">
-                    <h2 className="text-3xl font-bold flex items-center gap-3">
-                        <div className="p-2 bg-red-500/20 rounded-lg">
-                            <Trash2 className="w-7 h-7 text-red-400" />
-                        </div>
-                        <span className="bg-gradient-to-r from-red-400 to-red-300 bg-clip-text text-transparent">
-                            Eliminar cuenta
-                        </span>
-                    </h2>
-                </div>
-
-                <div
-                    className={`transition-all duration-500 ease-in-out ${
-                        showConfirmation
-                            ? "max-h-[800px] opacity-100"
-                            : "max-h-[200px] opacity-100"
-                    }`}
-                >
-                    {!showConfirmation ? (
-                        <div className="space-y-6">
-                            <div className="bg-red-500/5 rounded-xl p-6 border border-red-500/10 animate-fade-in-up">
-                                <div className="flex items-start gap-3 mb-4">
-                                    <AlertTriangle className="w-6 h-6 text-red-400 flex-shrink-0 mt-1" />
-                                    <div>
-                                        <h3 className="text-red-400 font-bold text-lg mb-2">
-                                            Eliminar cuenta
-                                        </h3>
-                                        <p className="text-gray-400 leading-relaxed">
-                                            Esta acción es permanente y no se
-                                            puede deshacer. Se eliminarán todos
-                                            tus datos, progreso y configuración.
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                            <button
-                                onClick={handleInitialClick}
-                                className="w-full px-6 py-3 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg transition-all duration-300 font-semibold border border-red-500/30 hover:border-red-500/60 cursor-pointer flex items-center justify-center gap-2"
-                            >
-                                <Trash2 className="w-5 h-5" />
-                                Eliminar mi cuenta
-                            </button>
-                        </div>
-                    ) : (
-                        <form
-                            onSubmit={handleDelete}
-                            className="space-y-6 animate-fade-in-up"
-                        >
-                            <div className="bg-red-500/10 rounded-xl p-6 border border-red-500/30">
-                                <div className="flex items-start gap-3">
-                                    <AlertTriangle className="w-8 h-8 text-red-400 flex-shrink-0" />
-                                    <div>
-                                        <h3 className="text-red-400 font-bold text-xl mb-3">
-                                            ¿Estás completamente seguro?
-                                        </h3>
-                                        <p className="text-gray-300 mb-4 leading-relaxed">
-                                            Esta acción eliminará
-                                            permanentemente tu cuenta y todos
-                                            los datos asociados:
-                                        </p>
-                                        <ul className="text-gray-400 space-y-2 list-disc list-inside mb-4">
-                                            <li>Tu perfil y configuración</li>
-                                            <li>
-                                                Todo tu progreso en ejercicios
-                                            </li>
-                                            <li>Historial de actividades</li>
-                                            <li>Datos personales</li>
-                                        </ul>
-                                        <p className="text-red-300 font-semibold">
-                                            Esta acción no se puede revertir.
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="flex gap-4 pt-4">
-                                <button
-                                    type="submit"
-                                    disabled={isDeleting}
-                                    className="flex-1 px-8 py-3 bg-red-500 hover:bg-red-600 text-white font-bold rounded-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center gap-2"
-                                >
-                                    {isDeleting ? (
-                                        <>
-                                            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                            Eliminando...
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Trash2 className="w-5 h-5" />
-                                            Sí, eliminar mi cuenta
-                                        </>
-                                    )}
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={handleCancel}
-                                    disabled={isDeleting}
-                                    className="flex-1 px-8 py-3 bg-transparent border-2 border-gray-500 text-gray-300 font-bold rounded-lg hover:bg-gray-500/10 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-                                >
-                                    Cancelar
-                                </button>
-                            </div>
-                        </form>
-                    )}
-                </div>
+        // Zona roja: dentro de este panel el acento pasa a rojo señal
+        <div
+            className="icv-panel border-[#ff3d00]/40 p-6 md:p-8"
+            style={{ "--icv-amber": "#ff3d00" } as React.CSSProperties}
+        >
+            <Corners />
+            <div className="mb-8 flex items-center justify-between">
+                <h2 className="icv-label !text-[#ff3d00]">
+                    ZONA ROJA — EXPULSIÓN DEL PROGRAMA
+                </h2>
+                <span className="icv-blink h-2 w-2 bg-[#ff3d00]" />
             </div>
+
+            {!showConfirmation ? (
+                <div className="space-y-6">
+                    <p className="max-w-xl text-xs leading-relaxed tracking-[0.04em] text-[#97896d]">
+                        Acción permanente e irreversible. Se destruirán todos
+                        tus datos: expediente, progreso en ejercicios y
+                        configuración. No hay copia de seguridad ni vuelta
+                        atrás.
+                    </p>
+                    <button
+                        onClick={handleInitialClick}
+                        data-cursor-label="PELIGRO"
+                        className="border border-[#ff3d00]/50 px-6 py-3 text-[0.65rem] tracking-[0.22em] text-[#ff3d00] transition-colors duration-300 hover:border-[#ff3d00] hover:bg-[#ff3d00]/10"
+                    >
+                        INICIAR SECUENCIA DE EXPULSIÓN
+                    </button>
+                </div>
+            ) : (
+                <form onSubmit={handleDelete} className="space-y-6">
+                    <div className="border border-[#ff3d00]/50 bg-[#ff3d00]/5 p-5">
+                        <p className="icv-label mb-4 !text-[#ff3d00]">
+                            <span className="icv-blink mr-2">▮</span>
+                            CONFIRMACIÓN FINAL REQUERIDA
+                        </p>
+                        <p className="mb-4 text-xs leading-relaxed tracking-[0.04em] text-[#eae0cc]">
+                            Esta acción eliminará permanentemente tu cuenta y
+                            todos los datos asociados:
+                        </p>
+                        <ul className="space-y-2 text-[0.7rem] tracking-[0.06em] text-[#97896d]">
+                            <li>
+                                <span className="mr-2 text-[#ff3d00]">▪</span>
+                                Tu perfil y configuración
+                            </li>
+                            <li>
+                                <span className="mr-2 text-[#ff3d00]">▪</span>
+                                Todo tu progreso en ejercicios
+                            </li>
+                            <li>
+                                <span className="mr-2 text-[#ff3d00]">▪</span>
+                                Historial de actividades
+                            </li>
+                            <li>
+                                <span className="mr-2 text-[#ff3d00]">▪</span>
+                                Datos personales
+                            </li>
+                        </ul>
+                        <p className="mt-4 text-[0.65rem] tracking-[0.2em] text-[#ff3d00]">
+                            NO SE PUEDE REVERTIR.
+                        </p>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-6">
+                        <ConsoleButton
+                            type="submit"
+                            disabled={isDeleting}
+                            red
+                            label={
+                                isDeleting
+                                    ? "Eliminando…"
+                                    : "Confirmar expulsión →"
+                            }
+                            cursorLabel="EXPULSAR"
+                            className="!px-6 !py-3 !text-[0.65rem]"
+                        />
+                        <button
+                            type="button"
+                            onClick={handleCancel}
+                            disabled={isDeleting}
+                            className="icv-link disabled:pointer-events-none disabled:opacity-40"
+                            data-cursor-label="ABORTAR"
+                        >
+                            ABORTAR SECUENCIA
+                        </button>
+                    </div>
+                </form>
+            )}
 
             {/* Modal de Verificación */}
             <DeleteAccountModal

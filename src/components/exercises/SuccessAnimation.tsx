@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { FiCheck, FiStar, FiTrendingUp } from "react-icons/fi";
+import Corners from "@/components/landing/Corners";
 
 interface SuccessAnimationProps {
     onComplete?: () => void;
     score?: number;
 }
 
+// Sello de misión cumplida: overlay carbón + estampado APTO
 export default function SuccessAnimation({
     onComplete,
     score = 100,
@@ -29,91 +30,55 @@ export default function SuccessAnimation({
     if (!isVisible) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm animate-fadeIn">
-            <div className="relative">
-                {/* Círculos de fondo animados */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-64 h-64 rounded-full bg-[#00ff9d]/10 animate-ping"></div>
-                </div>
-                <div className="absolute inset-0 flex items-center justify-center">
-                    <div
-                        className="w-48 h-48 rounded-full bg-[#00ff9d]/20 animate-ping"
-                        style={{ animationDelay: "0.2s" }}
-                    ></div>
-                </div>
+        <div className="icv-success-overlay fixed inset-0 z-[75] flex items-center justify-center bg-[#0f0c08]/90 px-4">
+            <div className="icv-panel icv-success-panel w-full max-w-md p-10 text-center">
+                <Corners />
 
-                {/* Contenido principal */}
-                <div className="relative bg-[#1a1a1a] border-2 border-[#00ff9d] rounded-2xl p-12 shadow-2xl animate-scaleIn">
-                    {/* Ícono de éxito */}
-                    <div className="flex justify-center mb-6">
-                        <div className="relative">
-                            <div className="w-24 h-24 rounded-full bg-[#00ff9d]/20 flex items-center justify-center animate-pulse">
-                                <FiCheck
-                                    size={48}
-                                    className="text-[#00ff9d]"
-                                    strokeWidth={3}
-                                />
-                            </div>
-                            {/* Estrellas decorativas */}
-                            <FiStar
-                                className="absolute -top-2 -right-2 text-yellow-400 animate-bounce"
-                                size={24}
-                            />
-                            <FiStar
-                                className="absolute -bottom-2 -left-2 text-yellow-400 animate-bounce"
-                                style={{ animationDelay: "0.2s" }}
-                                size={20}
-                            />
-                            <FiStar
-                                className="absolute top-0 -left-4 text-yellow-400 animate-bounce"
-                                style={{ animationDelay: "0.4s" }}
-                                size={16}
-                            />
-                        </div>
-                    </div>
+                <p className="icv-label mb-8">
+                    TRANSMISIÓN DEL AUDITOR — VEREDICTO FINAL
+                </p>
 
-                    {/* Texto principal */}
-                    <h2 className="text-4xl font-bold text-center mb-4 text-white animate-slideUp">
-                        ¡Está Perfecto!
-                    </h2>
+                {/* Sello estampado */}
+                <span className="icv-stamp icv-success-stamp inline-block text-[clamp(2.4rem,8vw,4rem)] text-[#ffb000]">
+                    APTO
+                </span>
 
-                    <p
-                        className="text-center text-gray-300 text-lg mb-6 animate-slideUp"
-                        style={{ animationDelay: "0.1s" }}
-                    >
-                        Has resuelto el ejercicio correctamente
-                    </p>
+                <p className="icv-display mt-8 text-lg text-[#eae0cc]">
+                    Misión cumplida.
+                </p>
+                <p className="mt-3 text-xs leading-relaxed tracking-[0.06em] text-[#97896d]">
+                    Ejercicio superado sin observaciones del auditor.
+                </p>
 
-                    {/* Score */}
-                    <div
-                        className="flex items-center justify-center gap-3 text-[#00ff9d] animate-slideUp"
-                        style={{ animationDelay: "0.2s" }}
-                    >
-                        <FiTrendingUp size={24} />
-                        <span className="text-3xl font-bold">{score}</span>
-                        <span className="text-xl text-gray-400">/100</span>
-                    </div>
+                {/* Lectura de puntuación */}
+                <dl className="mt-8 flex items-baseline justify-center gap-3">
+                    <dd className="icv-display text-4xl text-[#ffb000]">
+                        {score}
+                    </dd>
+                    <dt className="icv-label">/ 100 PUNTOS</dt>
+                </dl>
 
-                    {/* Confeti visual */}
-                    <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-2xl">
-                        {[...Array(20)].map((_, i) => (
-                            <div
-                                key={i}
-                                className="absolute w-2 h-2 bg-[#00ff9d] rounded-full animate-confetti"
-                                style={{
-                                    left: `${Math.random() * 100}%`,
-                                    top: "-10px",
-                                    animationDelay: `${Math.random() * 0.5}s`,
-                                    animationDuration: `${2 + Math.random()}s`,
-                                }}
-                            ></div>
-                        ))}
-                    </div>
-                </div>
+                <p className="icv-label icv-blink mt-8 !text-[#ffb000]">
+                    ▮ REGISTRANDO EN EL EXPEDIENTE
+                </p>
             </div>
 
             <style jsx>{`
-                @keyframes fadeIn {
+                .icv-success-overlay {
+                    animation: icv-success-fade 0.3s ease-out;
+                }
+
+                .icv-success-panel {
+                    animation: icv-success-pop 0.5s
+                        cubic-bezier(0.34, 1.56, 0.64, 1);
+                }
+
+                .icv-success-stamp {
+                    animation: icv-success-stamp 0.45s
+                        cubic-bezier(0.34, 1.56, 0.64, 1) 0.25s backwards;
+                }
+
+                @keyframes icv-success-fade {
                     from {
                         opacity: 0;
                     }
@@ -122,20 +87,9 @@ export default function SuccessAnimation({
                     }
                 }
 
-                @keyframes scaleIn {
+                @keyframes icv-success-pop {
                     from {
-                        transform: scale(0.5);
-                        opacity: 0;
-                    }
-                    to {
-                        transform: scale(1);
-                        opacity: 1;
-                    }
-                }
-
-                @keyframes slideUp {
-                    from {
-                        transform: translateY(20px);
+                        transform: translateY(30px);
                         opacity: 0;
                     }
                     to {
@@ -144,31 +98,15 @@ export default function SuccessAnimation({
                     }
                 }
 
-                @keyframes confetti {
-                    0% {
-                        transform: translateY(0) rotateZ(0deg);
-                        opacity: 1;
-                    }
-                    100% {
-                        transform: translateY(600px) rotateZ(720deg);
+                @keyframes icv-success-stamp {
+                    from {
+                        transform: rotate(-14deg) scale(1.7);
                         opacity: 0;
                     }
-                }
-
-                .animate-fadeIn {
-                    animation: fadeIn 0.3s ease-out;
-                }
-
-                .animate-scaleIn {
-                    animation: scaleIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-                }
-
-                .animate-slideUp {
-                    animation: slideUp 0.5s ease-out;
-                }
-
-                .animate-confetti {
-                    animation: confetti linear infinite;
+                    to {
+                        transform: rotate(-6deg) scale(1);
+                        opacity: 1;
+                    }
                 }
             `}</style>
         </div>

@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { createPortal } from "react-dom";
-import { AlertTriangle } from "lucide-react";
+import Corners from "@/components/landing/Corners";
+import ConsoleButton from "@/components/icv/ConsoleButton";
 
 interface DeleteAccountModalProps {
     isOpen: boolean;
@@ -61,86 +62,86 @@ export default function DeleteAccountModal({
 
     return createPortal(
         <div
-            className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
+            className="icv fixed inset-0 z-[95] flex items-center justify-center p-4"
             style={{
-                backgroundColor: "rgba(0, 0, 0, 0.75)",
-                backdropFilter: "blur(5px)",
+                backgroundColor: "rgba(15, 12, 8, 0.85)",
                 animation: isClosing
                     ? "fadeOut 0.2s ease-out"
                     : "fadeIn 0.3s ease-out",
             }}
         >
             <div
-                className="bg-gradient-to-br from-gray-900 to-black border-2 border-red-500/30 rounded-2xl p-8 max-w-md w-full shadow-2xl shadow-red-500/20 relative"
-                style={{
-                    animation: isClosing
-                        ? "scaleOut 0.2s ease-out"
-                        : "scaleIn 0.3s ease-out",
-                }}
+                className="icv-panel w-full max-w-md border-[#ff3d00]/50 bg-[#16110a] p-8"
+                style={
+                    {
+                        animation: isClosing
+                            ? "scaleOut 0.2s ease-out"
+                            : "scaleIn 0.3s ease-out",
+                        "--icv-amber": "#ff3d00",
+                    } as React.CSSProperties
+                }
             >
-                <div className="flex items-center gap-3 mb-6">
-                    <div className="p-3 bg-red-500/20 rounded-xl">
-                        <AlertTriangle className="w-8 h-8 text-red-400" />
-                    </div>
-                    <h3 className="text-2xl font-bold text-red-400">
-                        Verificación requerida
-                    </h3>
-                </div>
+                <Corners />
+                <p className="icv-label mb-2 !text-[#ff3d00]">
+                    <span className="icv-blink mr-2">▮</span>
+                    ZONA ROJA — VERIFICACIÓN REQUERIDA
+                </p>
+                <h3 className="icv-display mt-4 text-lg text-[#eae0cc]">
+                    Confirma tu identidad.
+                </h3>
 
                 {hasPassword ? (
                     // Usuario con contraseña: pedir contraseña
                     <>
-                        <p className="text-gray-300 mb-6 leading-relaxed">
-                            Para eliminar tu cuenta, primero debes confirmar tu
-                            identidad ingresando tu contraseña.
+                        <p className="mt-4 text-xs leading-relaxed tracking-[0.04em] text-[#97896d]">
+                            Para iniciar la expulsión debes confirmar tu
+                            identidad introduciendo tu contraseña.
                         </p>
 
-                        <form onSubmit={handlePasswordSubmit}>
-                            <div className="mb-6">
-                                <label className="text-red-400 text-sm font-semibold uppercase tracking-wide mb-2 block">
-                                    Contraseña
-                                </label>
-                                <input
-                                    type="password"
-                                    value={password}
-                                    onChange={(e) => {
-                                        setPassword(e.target.value);
-                                        setPasswordError("");
-                                    }}
-                                    placeholder="Ingresa tu contraseña"
-                                    className="w-full px-5 py-3 bg-black/50 border-2 border-red-500/30 rounded-xl focus:outline-none focus:border-red-500 transition-all duration-300 font-medium focus:shadow-lg focus:shadow-red-500/20 text-white"
-                                    autoFocus
-                                    required
-                                    disabled={isVerifying}
-                                />
-                                {passwordError && (
-                                    <p className="text-red-400 text-sm mt-2 flex items-center gap-2">
-                                        <AlertTriangle className="w-4 h-4" />
-                                        {passwordError}
-                                    </p>
-                                )}
-                            </div>
+                        <form onSubmit={handlePasswordSubmit} className="mt-6">
+                            <label className="icv-label mb-2 block">
+                                CONTRASEÑA
+                            </label>
+                            <input
+                                type="password"
+                                value={password}
+                                onChange={(e) => {
+                                    setPassword(e.target.value);
+                                    setPasswordError("");
+                                }}
+                                placeholder="••••••••"
+                                className={`icv-input ${passwordError ? "icv-input--error" : ""}`}
+                                autoFocus
+                                required
+                                disabled={isVerifying}
+                            />
+                            {passwordError && (
+                                <p className="mt-2 text-[0.65rem] tracking-[0.14em] text-[#ff3d00]">
+                                    <span className="icv-blink mr-1">▮</span>
+                                    {passwordError.toUpperCase()}
+                                </p>
+                            )}
 
-                            <div className="flex gap-3">
-                                <button
+                            <div className="mt-6 flex flex-wrap items-center gap-6">
+                                <ConsoleButton
                                     type="submit"
                                     disabled={!password || isVerifying}
-                                    className="flex-1 px-6 py-3 bg-red-500 hover:bg-red-600 text-white font-bold rounded-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-                                >
-                                    {isVerifying ? (
-                                        <>
-                                            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto"></div>
-                                        </>
-                                    ) : (
-                                        "Continuar"
-                                    )}
-                                </button>
+                                    red
+                                    label={
+                                        isVerifying
+                                            ? "Verificando…"
+                                            : "Continuar →"
+                                    }
+                                    cursorLabel="SEGUIR"
+                                    className="!px-6 !py-3 !text-[0.65rem]"
+                                />
                                 <button
                                     type="button"
                                     onClick={onClose}
-                                    className="flex-1 px-6 py-3 bg-transparent border-2 border-gray-500 text-gray-300 font-bold rounded-lg hover:bg-gray-500/10 transition-all duration-300 cursor-pointer"
+                                    className="icv-link"
+                                    data-cursor-label="ABORTAR"
                                 >
-                                    Cancelar
+                                    ABORTAR
                                 </button>
                             </div>
                         </form>
@@ -148,50 +149,52 @@ export default function DeleteAccountModal({
                 ) : (
                     // Usuario OAuth sin contraseña: pedir escribir "ELIMINAR"
                     <>
-                        <p className="text-gray-300 mb-4 leading-relaxed">
-                            Para confirmar la eliminación de tu cuenta, escribe{" "}
-                            <strong className="text-red-400">ELIMINAR</strong>{" "}
-                            en el campo de abajo.
-                        </p>
-                        <p className="text-gray-400 text-sm mb-6">
-                            Esta acción es permanente y eliminará todos tus
-                            datos.
+                        <p className="mt-4 text-xs leading-relaxed tracking-[0.04em] text-[#97896d]">
+                            Para confirmar la expulsión escribe{" "}
+                            <strong className="text-[#ff3d00]">
+                                ELIMINAR
+                            </strong>{" "}
+                            en el campo de abajo. Esta acción es permanente y
+                            destruirá todos tus datos.
                         </p>
 
-                        <form onSubmit={handleConfirmationSubmit}>
-                            <div className="mb-6">
-                                <label className="text-red-400 text-sm font-semibold uppercase tracking-wide mb-2 block">
-                                    Escribe &quot;ELIMINAR&quot; para confirmar
-                                </label>
-                                <input
-                                    type="text"
-                                    value={confirmationText}
-                                    onChange={(e) =>
-                                        setConfirmationText(
-                                            e.target.value.toUpperCase()
-                                        )
-                                    }
-                                    placeholder="ELIMINAR"
-                                    className="w-full px-5 py-3 bg-black/50 border-2 border-red-500/30 rounded-xl focus:outline-none focus:border-red-500 transition-all duration-300 font-medium focus:shadow-lg focus:shadow-red-500/20 text-white"
-                                    autoFocus
-                                    required
-                                />
-                            </div>
+                        <form
+                            onSubmit={handleConfirmationSubmit}
+                            className="mt-6"
+                        >
+                            <label className="icv-label mb-2 block">
+                                ESCRIBE &quot;ELIMINAR&quot; PARA CONFIRMAR
+                            </label>
+                            <input
+                                type="text"
+                                value={confirmationText}
+                                onChange={(e) =>
+                                    setConfirmationText(
+                                        e.target.value.toUpperCase()
+                                    )
+                                }
+                                placeholder="ELIMINAR"
+                                className="icv-input"
+                                autoFocus
+                                required
+                            />
 
-                            <div className="flex gap-3">
-                                <button
+                            <div className="mt-6 flex flex-wrap items-center gap-6">
+                                <ConsoleButton
                                     type="submit"
                                     disabled={confirmationText !== "ELIMINAR"}
-                                    className="flex-1 px-6 py-3 bg-red-500 hover:bg-red-600 text-white font-bold rounded-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-                                >
-                                    Continuar
-                                </button>
+                                    red
+                                    label="Continuar →"
+                                    cursorLabel="SEGUIR"
+                                    className="!px-6 !py-3 !text-[0.65rem]"
+                                />
                                 <button
                                     type="button"
                                     onClick={onClose}
-                                    className="flex-1 px-6 py-3 bg-transparent border-2 border-gray-500 text-gray-300 font-bold rounded-lg hover:bg-gray-500/10 transition-all duration-300 cursor-pointer"
+                                    className="icv-link"
+                                    data-cursor-label="ABORTAR"
                                 >
-                                    Cancelar
+                                    ABORTAR
                                 </button>
                             </div>
                         </form>

@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { gsap } from "gsap";
 import AuthGuard from "@/components/AuthGuard";
 import Navbar from "@/components/ui/Navbar";
 import ExercisesTable from "@/components/languages/ExercisesTable";
-import LanguageIcon from "@/components/languages/LanguageIcon";
-import DotGrid from "@/components/ui/DotGrid";
-import { FiArrowLeft, FiTarget, FiTrendingUp, FiZap } from "react-icons/fi";
+import Cursor from "@/components/landing/Cursor";
+import { prefersReducedMotion } from "@/components/landing/split";
 
 interface Exercise {
     id: string;
@@ -44,6 +44,7 @@ export default function LanguageExercisesPage() {
     const [data, setData] = useState<ExercisesData | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const rootRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const fetchExercises = async () => {
@@ -72,35 +73,43 @@ export default function LanguageExercisesPage() {
         }
     }, [languageId]);
 
+    // Revelado al cargar
+    useEffect(() => {
+        if (loading || !data) return;
+        const root = rootRef.current;
+        if (!root) return;
+
+        const ctx = gsap.context(() => {
+            if (prefersReducedMotion()) {
+                gsap.set(".icv-mod-reveal", { opacity: 1 });
+                return;
+            }
+            gsap.fromTo(
+                ".icv-mod-reveal",
+                { opacity: 0, y: 26 },
+                {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.8,
+                    stagger: 0.09,
+                    ease: "power4.out",
+                }
+            );
+        }, root);
+
+        return () => ctx.revert();
+    }, [loading, data]);
+
     if (loading) {
         return (
             <AuthGuard>
-                <div className="min-h-screen bg-black text-white relative overflow-hidden">
-                    {/* DotGrid Background */}
-                    <div className="fixed inset-0 z-0">
-                        <DotGrid
-                            dotSize={5}
-                            gap={15}
-                            baseColor="#271e37"
-                            activeColor="#00ff9d"
-                            proximity={100}
-                            shockRadius={180}
-                            shockStrength={2}
-                            resistance={1500}
-                            returnDuration={3}
-                        />
-                    </div>
-
-                    <div className="relative z-10">
-                        <Navbar />
-                        <div className="pt-24 px-6 flex items-center justify-center min-h-[60vh]">
-                            <div className="text-center">
-                                <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-[#00ff9d] mx-auto mb-4"></div>
-                                <p className="text-gray-400">
-                                    Cargando ejercicios...
-                                </p>
-                            </div>
-                        </div>
+                <div className="icv relative min-h-screen">
+                    <div className="icv-scan" aria-hidden="true" />
+                    <Navbar />
+                    <div className="flex min-h-[70vh] items-center justify-center">
+                        <p className="icv-label icv-blink !text-[#ffb000]">
+                            ▮ CARGANDO MANIFIESTO
+                        </p>
                     </div>
                 </div>
             </AuthGuard>
@@ -110,37 +119,23 @@ export default function LanguageExercisesPage() {
     if (error || !data) {
         return (
             <AuthGuard>
-                <div className="min-h-screen bg-black text-white relative overflow-hidden">
-                    {/* DotGrid Background */}
-                    <div className="fixed inset-0 z-0">
-                        <DotGrid
-                            dotSize={5}
-                            gap={15}
-                            baseColor="#271e37"
-                            activeColor="#00ff9d"
-                            proximity={100}
-                            shockRadius={180}
-                            shockStrength={2}
-                            resistance={1500}
-                            returnDuration={3}
-                        />
-                    </div>
-
-                    <div className="relative z-10">
-                        <Navbar />
-                        <div className="pt-24 px-6 flex items-center justify-center min-h-[60vh]">
-                            <div className="text-center">
-                                <p className="text-red-400 text-xl mb-4">
-                                    {error || "No se encontraron datos"}
-                                </p>
-                                <button
-                                    onClick={() => router.push("/languages")}
-                                    className="text-[#00ff9d] hover:underline"
-                                >
-                                    Volver a lenguajes
-                                </button>
-                            </div>
-                        </div>
+                <div className="icv relative min-h-screen">
+                    <Cursor />
+                    <div className="icv-scan" aria-hidden="true" />
+                    <Navbar />
+                    <div className="flex min-h-[70vh] flex-col items-center justify-center gap-6 px-4">
+                        <p className="icv-label !text-[#ff3d00]">
+                            <span className="icv-blink mr-2">▮</span>
+                            FALLO DE LECTURA —{" "}
+                            {(error || "SIN DATOS").toUpperCase()}
+                        </p>
+                        <button
+                            onClick={() => router.push("/languages")}
+                            className="icv-link"
+                            data-cursor-label="VOLVER"
+                        >
+                            ← VOLVER AL BANCO DE PRUEBAS
+                        </button>
                     </div>
                 </div>
             </AuthGuard>
@@ -149,190 +144,107 @@ export default function LanguageExercisesPage() {
 
     const { language, exercises, total } = data;
 
+    const readouts = [
+        { label: "TOTAL", value: total, color: "#eae0cc" },
+        { label: "FÁCIL — SECCIÓN A", value: exercises.easy.length, color: "#eae0cc" },
+        { label: "MEDIO — SECCIÓN B", value: exercises.medium.length, color: "#ffb000" },
+        { label: "DIFÍCIL — SECCIÓN C", value: exercises.hard.length, color: "#ff3d00" },
+    ];
+
     return (
         <AuthGuard>
-            <div className="min-h-screen bg-black text-white relative overflow-hidden">
-                {/* DotGrid Background */}
-                <div className="fixed inset-0 z-0">
-                    <DotGrid
-                        dotSize={5}
-                        gap={15}
-                        baseColor="#271e37"
-                        activeColor="#00ff9d"
-                        proximity={100}
-                        shockRadius={180}
-                        shockStrength={2}
-                        resistance={1500}
-                        returnDuration={3}
-                    />
-                </div>
+            <div ref={rootRef} className="icv relative min-h-screen">
+                <Cursor />
+                <div className="icv-scan" aria-hidden="true" />
+                <Navbar />
 
-                {/* Content */}
-                <div className="relative z-10">
-                    <Navbar />
+                <main className="px-4 pb-24 pt-32 md:px-10 lg:px-24">
+                    <button
+                        onClick={() => router.push("/languages")}
+                        className="icv-mod-reveal icv-link opacity-0"
+                        data-cursor-label="VOLVER"
+                    >
+                        ← BANCO DE PRUEBAS
+                    </button>
 
-                    <div className="pt-24 pb-16 px-6 max-w-7xl mx-auto">
-                        {/* Botón volver */}
-                        <button
-                            onClick={() => router.push("/languages")}
-                            className="flex items-center gap-2 text-gray-400 hover:text-[#00ff9d] transition-colors mb-12 group mt-10 ml-10"
-                        >
-                            <FiArrowLeft className="group-hover:-translate-x-1 transition-transform" />
-                            <span>Volver a lenguajes</span>
-                        </button>
-
-                        {/* Header mejorado */}
-                        <div className="text-center mb-20">
-                            {/* Icono del lenguaje con efecto glow */}
-                            <div className="relative inline-block mb-8">
-                                <div
-                                    className="absolute inset-0 rounded-3xl blur-xl opacity-50"
-                                    style={{ backgroundColor: language.color }}
-                                />
-                                <div className="relative inline-flex items-center justify-center w-24 h-24 rounded-3xl bg-gradient-to-br from-white/10 to-white/5 border border-white/20 backdrop-blur-sm">
-                                    <LanguageIcon
-                                        icon={language.icon ?? null}
-                                        slug={language.slug}
-                                        className="text-5xl"
-                                        color={language.color}
-                                    />
-                                </div>
-                            </div>
-
-                            {/* Título con gradiente mejorado */}
-                            <h1 className="text-6xl md:text-7xl font-bold mb-6">
-                                <span className="bg-gradient-to-r from-white via-gray-200 to-gray-400 bg-clip-text text-transparent">
-                                    Ejercicios de
-                                </span>
-                                <br />
-                                <span
-                                    className="bg-gradient-to-r bg-clip-text text-transparent"
-                                    style={{
-                                        backgroundImage: `linear-gradient(to right, ${language.color}, #00ff9d)`,
-                                    }}
-                                >
-                                    {language.name}
-                                </span>
-                            </h1>
-
-                            {language.description && (
-                                <p className="text-gray-400 text-lg max-w-2xl mx-auto mb-8">
-                                    {language.description}
-                                </p>
-                            )}
-
-                            {/* Stats cards mejorados */}
-                            <div className="flex flex-wrap items-center justify-center gap-4 max-w-4xl mx-auto">
-                                {/* Total de ejercicios */}
-                                <div className="flex-1 min-w-[200px] bg-gradient-to-br from-white/10 to-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-sm">
-                                    <div className="flex items-center justify-center gap-3 mb-2">
-                                        <FiTarget className="text-2xl text-[#00ff9d]" />
-                                        <span className="text-3xl font-bold text-white">
-                                            {total}
-                                        </span>
-                                    </div>
-                                    <p className="text-sm text-gray-400">
-                                        Ejercicios totales
-                                    </p>
-                                </div>
-
-                                {/* Nivel fácil */}
-                                <div className="flex-1 min-w-[200px] bg-gradient-to-br from-green-500/10 to-green-500/5 border border-green-500/20 rounded-2xl p-6 backdrop-blur-sm">
-                                    <div className="flex items-center justify-center gap-3 mb-2">
-                                        <div className="w-4 h-4 rounded-full bg-green-400"></div>
-                                        <span className="text-3xl font-bold text-green-400">
-                                            {exercises.easy.length}
-                                        </span>
-                                    </div>
-                                    <p className="text-sm text-gray-400">
-                                        {exercises.easy.length === 1
-                                            ? "Fácil"
-                                            : "Fáciles"}
-                                    </p>
-                                </div>
-
-                                {/* Nivel medio */}
-                                <div className="flex-1 min-w-[200px] bg-gradient-to-br from-yellow-500/10 to-yellow-500/5 border border-yellow-500/20 rounded-2xl p-6 backdrop-blur-sm">
-                                    <div className="flex items-center justify-center gap-3 mb-2">
-                                        <FiTrendingUp className="text-2xl text-yellow-400" />
-                                        <span className="text-3xl font-bold text-yellow-400">
-                                            {exercises.medium.length}
-                                        </span>
-                                    </div>
-                                    <p className="text-sm text-gray-400">
-                                        {exercises.medium.length === 1
-                                            ? "Medio"
-                                            : "Medios"}
-                                    </p>
-                                </div>
-
-                                {/* Nivel difícil */}
-                                <div className="flex-1 min-w-[200px] bg-gradient-to-br from-red-500/10 to-red-500/5 border border-red-500/20 rounded-2xl p-6 backdrop-blur-sm">
-                                    <div className="flex items-center justify-center gap-3 mb-2">
-                                        <FiZap className="text-2xl text-red-400" />
-                                        <span className="text-3xl font-bold text-red-400">
-                                            {exercises.hard.length}
-                                        </span>
-                                    </div>
-                                    <p className="text-sm text-gray-400">
-                                        {exercises.hard.length === 1
-                                            ? "Difícil"
-                                            : "Difíciles"}
-                                    </p>
-                                </div>
-                            </div>
-
-                            {total === 0 && (
-                                <div className="mt-12 p-10 bg-gradient-to-br from-white/10 to-white/5 border border-white/10 rounded-2xl backdrop-blur-sm max-w-2xl mx-auto">
-                                    <LanguageIcon
-                                        icon={language.icon ?? null}
-                                        slug={language.slug}
-                                        className="text-5xl text-gray-500 mx-auto mb-4"
-                                    />
-                                    <p className="text-gray-400 text-lg">
-                                        Aún no hay ejercicios disponibles para
-                                        este lenguaje.
-                                    </p>
-                                    <p className="text-gray-500 text-sm mt-2">
-                                        ¡Vuelve pronto para ver nuevos desafíos!
-                                    </p>
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Secciones de ejercicios */}
-                        {total > 0 && (
-                            <div className="space-y-20">
-                                <ExercisesTable
-                                    exercises={exercises.easy}
-                                    difficulty="EASY"
-                                    languageId={languageId}
-                                    title="Nivel Fácil"
-                                    description="Ejercicios para comenzar y familiarizarte con los conceptos básicos"
-                                    accentColor={language.color}
-                                />
-
-                                <ExercisesTable
-                                    exercises={exercises.medium}
-                                    difficulty="MEDIUM"
-                                    languageId={languageId}
-                                    title="Nivel Medio"
-                                    description="Desafíos intermedios para mejorar tus habilidades"
-                                    accentColor={language.color}
-                                />
-
-                                <ExercisesTable
-                                    exercises={exercises.hard}
-                                    difficulty="HARD"
-                                    languageId={languageId}
-                                    title="Nivel Difícil"
-                                    description="Retos avanzados para poner a prueba tu dominio"
-                                    accentColor={language.color}
-                                />
-                            </div>
+                    {/* Cabecera del módulo */}
+                    <header className="mb-16 mt-10">
+                        <p className="icv-mod-reveal icv-label mb-6 opacity-0">
+                            <span className="mr-2 inline-block h-2 w-2 bg-[#ffb000] align-middle" />
+                            MÓDULO {language.slug.toUpperCase()} — MANIFIESTO
+                            DE EJERCICIOS
+                        </p>
+                        <h1 className="icv-mod-reveal icv-display text-[clamp(2.6rem,9vw,7.5rem)] text-[#ffb000] opacity-0">
+                            {language.name}
+                        </h1>
+                        {language.description && (
+                            <p className="icv-mod-reveal mt-6 max-w-xl text-sm leading-relaxed text-[#97896d] opacity-0">
+                                {language.description}
+                            </p>
                         )}
-                    </div>
-                </div>
+
+                        {/* Lecturas del módulo */}
+                        <dl className="icv-mod-reveal mt-12 grid grid-cols-2 border border-[rgba(234,224,204,0.16)] opacity-0 md:grid-cols-4">
+                            {readouts.map((r, i) => (
+                                <div
+                                    key={r.label}
+                                    className={`border-[rgba(234,224,204,0.16)] p-5 ${i > 0 ? "md:border-l" : ""} ${i % 2 === 1 ? "max-md:border-l" : ""} ${i >= 2 ? "max-md:border-t" : ""}`}
+                                >
+                                    <dd
+                                        className="icv-display text-[clamp(1.6rem,3.5vw,2.6rem)]"
+                                        style={{ color: r.color }}
+                                    >
+                                        {String(r.value).padStart(2, "0")}
+                                    </dd>
+                                    <dt className="icv-label mt-2">
+                                        {r.label}
+                                    </dt>
+                                </div>
+                            ))}
+                        </dl>
+                    </header>
+
+                    {/* Sin ejercicios */}
+                    {total === 0 && (
+                        <div className="icv-mod-reveal border border-[rgba(234,224,204,0.16)] py-24 text-center opacity-0">
+                            <p className="icv-label !text-[#ff3d00]">
+                                SIN EJERCICIOS EN ESTE MÓDULO — VUELVE PRONTO
+                            </p>
+                        </div>
+                    )}
+
+                    {/* Secciones del manifiesto */}
+                    {total > 0 && (
+                        <div className="icv-mod-reveal opacity-0">
+                            <ExercisesTable
+                                exercises={exercises.easy}
+                                difficulty="EASY"
+                                languageId={languageId}
+                                title="Fácil"
+                                description="Toma de contacto con los conceptos básicos"
+                                accentColor={language.color}
+                            />
+
+                            <ExercisesTable
+                                exercises={exercises.medium}
+                                difficulty="MEDIUM"
+                                languageId={languageId}
+                                title="Medio"
+                                description="Desafíos intermedios para ganar altitud"
+                                accentColor={language.color}
+                            />
+
+                            <ExercisesTable
+                                exercises={exercises.hard}
+                                difficulty="HARD"
+                                languageId={languageId}
+                                title="Difícil"
+                                description="Retos avanzados para poner a prueba tu dominio"
+                                accentColor={language.color}
+                            />
+                        </div>
+                    )}
+                </main>
             </div>
         </AuthGuard>
     );

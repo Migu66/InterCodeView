@@ -1,6 +1,5 @@
 "use client";
 
-import { FiBook, FiAlertCircle, FiCheckCircle } from "react-icons/fi";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -9,188 +8,48 @@ interface ExerciseStatementProps {
     difficulty: "EASY" | "MEDIUM" | "HARD";
 }
 
+// Dificultad → señal (hueso / ámbar / rojo)
+const difficultyConfig = {
+    EASY: { tag: "FÁCIL", color: "#eae0cc" },
+    MEDIUM: { tag: "MEDIO", color: "#ffb000" },
+    HARD: { tag: "DIFÍCIL", color: "#ff3d00" },
+};
+
 export default function ExerciseStatement({
     description,
     difficulty,
 }: ExerciseStatementProps) {
-    const getDifficultyConfig = (diff: string) => {
-        switch (diff) {
-            case "EASY":
-                return {
-                    color: "text-green-500",
-                    bg: "bg-green-500/10",
-                    border: "border-green-500/30",
-                    icon: FiCheckCircle,
-                    text: "Fácil",
-                };
-            case "MEDIUM":
-                return {
-                    color: "text-yellow-500",
-                    bg: "bg-yellow-500/10",
-                    border: "border-yellow-500/30",
-                    icon: FiAlertCircle,
-                    text: "Medio",
-                };
-            case "HARD":
-                return {
-                    color: "text-red-500",
-                    bg: "bg-red-500/10",
-                    border: "border-red-500/30",
-                    icon: FiAlertCircle,
-                    text: "Difícil",
-                };
-            default:
-                return {
-                    color: "text-gray-500",
-                    bg: "bg-gray-500/10",
-                    border: "border-gray-500/30",
-                    icon: FiBook,
-                    text: diff,
-                };
-        }
+    const config = difficultyConfig[difficulty] ?? {
+        tag: difficulty,
+        color: "#97896d",
     };
 
-    const config = getDifficultyConfig(difficulty);
-    const Icon = config.icon;
-
     return (
-        <div className="h-[calc(100vh-305px)] flex flex-col">
-            {/* Statement Header */}
-            <div className="bg-[#1a1a1a] border border-gray-800 rounded-t-lg px-4 py-3 flex items-center gap-2">
-                <FiBook className="text-[#00ff9d]" size={20} />
-                <span className="text-sm font-semibold text-gray-300">
-                    Enunciado del Ejercicio
+        <div className="flex h-[calc(100vh-305px)] min-h-[400px] flex-col">
+            {/* Cabecera del plan de vuelo */}
+            <div className="flex items-center justify-between border border-[rgba(234,224,204,0.16)] bg-[#16110a] px-4 py-3">
+                <div className="flex items-center gap-3">
+                    <span className="icv-blink h-2 w-2 bg-[#ffb000]" />
+                    <span className="icv-label !text-[#eae0cc]">
+                        PLAN DE VUELO — ENUNCIADO
+                    </span>
+                </div>
+                <span
+                    className="text-[0.65rem] tracking-[0.2em]"
+                    style={{ color: config.color }}
+                >
+                    [{config.tag}]
                 </span>
             </div>
 
-            {/* Statement Content */}
-            <div className="flex-1 bg-[#0d0d0d] border-l border-r border-b border-gray-800 rounded-b-lg p-6 overflow-y-auto custom-scrollbar pb-5">
-                {/* Difficulty Badge */}
-                <div className="mb-6">
-                    <div
-                        className={`inline-flex items-center gap-2 px-4 py-2 rounded-full ${config.bg} border ${config.border}`}
-                    >
-                        <Icon className={config.color} size={16} />
-                        <span
-                            className={`text-sm font-semibold ${config.color}`}
-                        >
-                            Nivel: {config.text}
-                        </span>
-                    </div>
-                </div>
-
-                {/* Description */}
-                <div className="prose prose-invert max-w-none markdown-content">
+            {/* Contenido */}
+            <div className="icv-terminal icv-scroll flex-1 overflow-y-auto border-t-0 p-6">
+                <div className="icv-md">
                     <ReactMarkdown remarkPlugins={[remarkGfm]}>
                         {description || "Sin enunciado disponible"}
                     </ReactMarkdown>
                 </div>
-
-                {/* Example Section (si existe en la descripción) */}
-                {description && description.includes("Ejemplo") && (
-                    <div className="mt-6 p-4 bg-[#1a1a1a] border border-gray-800 rounded-lg">
-                        <h3 className="text-[#00ff9d] font-semibold mb-2 flex items-center gap-2">
-                            <span>📝</span>
-                            <span>Ejemplos</span>
-                        </h3>
-                        <p className="text-gray-400 text-sm">
-                            Revisa los ejemplos en el enunciado para entender
-                            mejor el problema.
-                        </p>
-                    </div>
-                )}
             </div>
-
-            <style jsx global>{`
-                .custom-scrollbar::-webkit-scrollbar {
-                    width: 8px;
-                }
-                .custom-scrollbar::-webkit-scrollbar-track {
-                    background: #0d0d0d;
-                }
-                .custom-scrollbar::-webkit-scrollbar-thumb {
-                    background: #333;
-                    border-radius: 4px;
-                }
-                .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-                    background: #444;
-                }
-
-                /* Estilos para el contenido markdown */
-                .markdown-content {
-                    color: #d1d5db;
-                    line-height: 1.75;
-                }
-
-                .markdown-content h2 {
-                    color: #00ff9d;
-                    font-size: 1.25rem;
-                    font-weight: 700;
-                    margin-top: 1.5rem;
-                    margin-bottom: 1rem;
-                }
-
-                .markdown-content h3 {
-                    color: #00ff9d;
-                    font-size: 1.1rem;
-                    font-weight: 600;
-                    margin-top: 1.25rem;
-                    margin-bottom: 0.75rem;
-                }
-
-                .markdown-content p {
-                    margin-bottom: 1rem;
-                    color: #d1d5db;
-                }
-
-                .markdown-content code {
-                    background-color: #1a1a1a;
-                    color: #00ff9d;
-                    padding: 0.125rem 0.375rem;
-                    border-radius: 0.25rem;
-                    font-size: 0.875rem;
-                    font-family: "Courier New", monospace;
-                }
-
-                .markdown-content pre {
-                    background-color: #0d0d0d;
-                    border: 1px solid #333;
-                    border-radius: 0.5rem;
-                    padding: 1rem;
-                    overflow-x: auto;
-                    margin: 1rem 0;
-                }
-
-                .markdown-content pre code {
-                    background-color: transparent;
-                    padding: 0;
-                    color: #d1d5db;
-                }
-
-                .markdown-content ul {
-                    list-style: disc;
-                    padding-left: 1.5rem;
-                    margin-bottom: 1rem;
-                }
-
-                .markdown-content li {
-                    margin-bottom: 0.5rem;
-                    color: #d1d5db;
-                }
-
-                .markdown-content strong {
-                    color: white;
-                    font-weight: 700;
-                }
-
-                .markdown-content blockquote {
-                    border-left: 4px solid #00ff9d;
-                    padding-left: 1rem;
-                    color: #9ca3af;
-                    font-style: italic;
-                    margin: 1rem 0;
-                }
-            `}</style>
         </div>
     );
 }

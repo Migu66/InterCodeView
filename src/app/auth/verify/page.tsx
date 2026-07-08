@@ -3,8 +3,11 @@
 import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import DotGrid from "@/components/ui/DotGrid";
 import Toast from "@/components/ui/Toast";
+import AuthShell from "@/components/icv/AuthShell";
+import BootScreen from "@/components/icv/BootScreen";
+import ConsoleButton from "@/components/icv/ConsoleButton";
+import Corners from "@/components/landing/Corners";
 
 function VerifyContent() {
     const router = useRouter();
@@ -125,48 +128,23 @@ function VerifyContent() {
 
     if (success) {
         return (
-            <div className="min-h-screen bg-black text-white overflow-hidden relative flex items-center justify-center">
-                <div className="fixed inset-0 z-0">
-                    <DotGrid
-                        dotSize={5}
-                        gap={15}
-                        baseColor="#271e37"
-                        activeColor="#00ff9d"
-                        proximity={100}
-                        shockRadius={180}
-                        shockStrength={2}
-                        resistance={1500}
-                        returnDuration={3}
-                    />
-                </div>
-
-                <div className="relative z-10 w-full max-w-md px-6 py-12 text-center">
-                    <div className="bg-gradient-to-br from-gray-900/80 to-gray-800/80 backdrop-blur-xl rounded-2xl p-8 border border-green-500/30 shadow-2xl shadow-green-500/10">
-                        <div className="mb-6">
-                            <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <svg
-                                    className="w-10 h-10 text-green-400"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M5 13l4 4L19 7"
-                                    />
-                                </svg>
-                            </div>
-                            <h1 className="text-3xl font-bold text-green-400 mb-3">
-                                ¡Verificado!
-                            </h1>
-                            <p className="text-gray-300">
-                                Tu email ha sido verificado exitosamente.
-                                Redirigiendo al login...
-                            </p>
-                        </div>
-                    </div>
+            <div className="icv relative flex min-h-screen items-center justify-center px-4">
+                <div className="icv-scan" aria-hidden="true" />
+                <div className="icv-panel w-full max-w-md p-10 text-center">
+                    <Corners />
+                    <p className="icv-label mb-8">
+                        ACC/03 — VERIFICACIÓN COMPLETADA
+                    </p>
+                    <span className="icv-stamp text-2xl text-[#ffb000]">
+                        VERIFICADO
+                    </span>
+                    <p className="mt-8 text-sm leading-relaxed text-[#97896d]">
+                        Identidad confirmada. Redirigiendo al control de
+                        acceso…
+                    </p>
+                    <p className="icv-label icv-blink mt-6 !text-[#ffb000]">
+                        ▮ TRANSFIRIENDO
+                    </p>
                 </div>
 
                 {showToast && (
@@ -181,112 +159,78 @@ function VerifyContent() {
     }
 
     return (
-        <div className="min-h-screen bg-black text-white overflow-hidden relative flex items-center justify-center">
-            <div className="fixed inset-0 z-0">
-                <DotGrid
-                    dotSize={5}
-                    gap={15}
-                    baseColor="#271e37"
-                    activeColor="#00ff9d"
-                    proximity={100}
-                    shockRadius={180}
-                    shockStrength={2}
-                    resistance={1500}
-                    returnDuration={3}
-                />
-            </div>
-
-            <div className="relative z-10 w-full max-w-md px-6 py-12">
-                <Link
-                    href="/"
-                    className="inline-flex items-center gap-2 text-green-400 hover:text-green-300 transition-colors mb-8 group"
-                >
-                    <span className="group-hover:-translate-x-1 transition-transform">
-                        ←
-                    </span>
-                    Volver al inicio
-                </Link>
-
-                <div className="text-center mb-8">
-                    <h1 className="text-5xl font-black tracking-tighter mb-3">
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 via-green-300 to-green-500">
-                            Verificar Email
-                        </span>
-                    </h1>
-                    <p className="text-xl text-gray-400">
-                        Ingresa el código que enviamos a tu correo
-                    </p>
-                    {email && (
-                        <p className="text-sm text-green-400 mt-2">
-                            Enviado a:{" "}
-                            <span className="font-semibold">{email}</span>
-                        </p>
-                    )}
-                </div>
-
-                <div className="bg-gradient-to-br from-gray-900/80 to-gray-800/80 backdrop-blur-xl rounded-2xl p-8 border border-green-500/30 shadow-2xl shadow-green-500/10">
-                    <div className="space-y-6">
-                        {error && (
-                            <div className="bg-red-500/10 border border-red-500/50 rounded-lg p-4 text-red-400 text-sm">
-                                {error}
-                            </div>
-                        )}
-
-                        <div className="space-y-2">
-                            <label
-                                htmlFor="token"
-                                className="block text-sm font-semibold text-green-400"
-                            >
-                                Código de verificación
-                            </label>
-                            <input
-                                id="token"
-                                name="token"
-                                type="text"
-                                value={token}
-                                onChange={(e) => setToken(e.target.value)}
-                                className="w-full px-4 py-3 bg-black/50 border border-green-500/30 rounded-lg text-white text-center text-2xl tracking-widest font-mono placeholder-gray-500 focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition-all"
-                                placeholder="123456"
-                                maxLength={6}
-                                disabled={loading}
-                            />
-                            <p className="text-sm text-gray-400 text-center">
-                                Ingresa el código de 6 dígitos
-                            </p>
-                        </div>
-
-                        <button
-                            onClick={handleVerify}
-                            disabled={loading || !token}
-                            className="w-full px-8 py-4 bg-gradient-to-r from-green-500 to-green-600 text-black font-bold rounded-lg hover:from-green-400 hover:to-green-500 transition-all duration-300 transform hover:scale-105 hover:shadow-xl hover:shadow-green-500/50 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
-                        >
-                            {loading ? "Verificando..." : "Verificar código"}
-                        </button>
-
-                        <div className="text-center space-y-3">
-                            <button
-                                onClick={handleResendCode}
-                                disabled={loading}
-                                className="text-green-400 hover:text-green-300 text-sm font-semibold transition-colors disabled:opacity-50"
-                            >
-                                ¿No recibiste el código? Reenviar
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="mt-6 text-center">
-                    <p className="text-gray-400 text-sm">
-                        ¿Ya verificaste tu cuenta?{" "}
+        <>
+            <AuthShell
+                code="ACC/03"
+                procedure="VERIFICACIÓN DE IDENTIDAD"
+                titleLines={[
+                    { text: "Confirma", tone: "bone" },
+                    { text: "la señal.", tone: "amber" },
+                ]}
+                intro={
+                    email
+                        ? `Hemos transmitido un código de 6 dígitos a ${email}.`
+                        : "Hemos transmitido un código de 6 dígitos a tu correo."
+                }
+                backHref="/auth/login"
+                backLabel="CONTROL DE ACCESO"
+                panelTitle="CÓDIGO DE VERIFICACIÓN"
+                below={
+                    <p className="text-xs tracking-[0.08em] text-[#97896d]">
+                        ¿YA VERIFICADO?{" "}
                         <Link
                             href="/auth/login"
-                            className="text-green-400 hover:text-green-300 font-semibold transition-colors"
+                            className="icv-link !text-[#ffb000]"
+                            data-cursor-label="ENTRAR"
                         >
-                            Inicia sesión
+                            INICIAR SESIÓN
                         </Link>
                     </p>
+                }
+            >
+                <div className="space-y-6">
+                    {error && (
+                        <div className="border border-[#ff3d00] bg-[#ff3d00]/10 p-4 text-xs leading-relaxed tracking-[0.06em] text-[#ff3d00]">
+                            <span className="icv-blink mr-2">▮</span>
+                            {error}
+                        </div>
+                    )}
+
+                    <div className="space-y-3">
+                        <label htmlFor="token" className="icv-label block">
+                            INTRODUCE LOS 6 DÍGITOS
+                        </label>
+                        <input
+                            id="token"
+                            name="token"
+                            type="text"
+                            value={token}
+                            onChange={(e) => setToken(e.target.value)}
+                            className="icv-input icv-display text-center !text-3xl !tracking-[0.5em] !text-[#ffb000]"
+                            placeholder="000000"
+                            maxLength={6}
+                            disabled={loading}
+                        />
+                    </div>
+
+                    <ConsoleButton
+                        onClick={handleVerify}
+                        disabled={loading || !token}
+                        label={loading ? "Verificando…" : "Confirmar código →"}
+                        cursorLabel="VERIFICAR"
+                        className="w-full"
+                    />
+
+                    <button
+                        onClick={handleResendCode}
+                        disabled={loading}
+                        className="icv-link mx-auto block disabled:pointer-events-none disabled:opacity-40"
+                        data-cursor-label="REENVIAR"
+                    >
+                        SIN SEÑAL — REENVIAR CÓDIGO
+                    </button>
                 </div>
-            </div>
+            </AuthShell>
 
             {showToast && (
                 <Toast
@@ -295,19 +239,13 @@ function VerifyContent() {
                     onClose={() => setShowToast(false)}
                 />
             )}
-        </div>
+        </>
     );
 }
 
 export default function VerifyPage() {
     return (
-        <Suspense
-            fallback={
-                <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black flex items-center justify-center">
-                    <div className="text-white">Cargando...</div>
-                </div>
-            }
-        >
+        <Suspense fallback={<BootScreen label="CARGANDO" />}>
             <VerifyContent />
         </Suspense>
     );

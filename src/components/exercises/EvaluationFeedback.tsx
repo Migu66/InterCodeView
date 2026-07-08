@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { FiCheckCircle, FiAlertCircle, FiXCircle } from "react-icons/fi";
+import Corners from "@/components/landing/Corners";
 
 interface EvaluationFeedbackProps {
     status: "perfect" | "good" | "needs_improvement";
@@ -10,6 +10,13 @@ interface EvaluationFeedbackProps {
     feedback: string;
     suggestions?: string[];
 }
+
+// Veredictos del auditor: sello + color de señal
+const statusConfig = {
+    perfect: { stamp: "APTO", color: "#ffb000" },
+    good: { stamp: "CASI", color: "#eae0cc" },
+    needs_improvement: { stamp: "REINTENTAR", color: "#ff3d00" },
+};
 
 export default function EvaluationFeedback({
     status,
@@ -28,77 +35,70 @@ export default function EvaluationFeedback({
         return () => clearTimeout(timer);
     }, [status, message, score]); // Re-animar cuando cambian estos valores
 
-    const getStatusIcon = () => {
-        switch (status) {
-            case "perfect":
-                return <FiCheckCircle className="text-green-500" size={32} />;
-            case "good":
-                return <FiAlertCircle className="text-yellow-500" size={32} />;
-            case "needs_improvement":
-                return <FiXCircle className="text-red-500" size={32} />;
-        }
-    };
+    const config = statusConfig[status];
 
-    const getStatusColor = () => {
-        switch (status) {
-            case "perfect":
-                return "border-green-500/50 bg-green-500/5";
-            case "good":
-                return "border-yellow-500/50 bg-yellow-500/5";
-            case "needs_improvement":
-                return "border-red-500/50 bg-red-500/5";
-        }
-    };
-
-    const getScoreColor = () => {
-        if (score >= 90) return "text-green-500";
-        if (score >= 70) return "text-yellow-500";
-        return "text-red-500";
-    };
+    const scoreColor =
+        score >= 90 ? "#ffb000" : score >= 70 ? "#eae0cc" : "#ff3d00";
 
     return (
         <div
-            className={`border-2 rounded-lg p-6 ${getStatusColor()} transition-all duration-300 ${
+            className={`icv-panel p-6 transition-all md:p-8 ${
                 isVisible
-                    ? "opacity-100 translate-y-0"
-                    : "opacity-0 translate-y-4"
+                    ? "translate-y-0 opacity-100"
+                    : "translate-y-4 opacity-0"
             }`}
             style={{
                 transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
             }}
         >
-            {/* Header */}
-            <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
-                    {getStatusIcon()}
-                    <h3 className="text-xl font-bold text-white">{message}</h3>
+            <Corners />
+
+            {/* Cabecera del informe */}
+            <div className="mb-6 flex flex-wrap items-start justify-between gap-6">
+                <div>
+                    <p className="icv-label mb-4">
+                        INFORME DE AUDITORÍA — MOTOR IA
+                        <span className="icv-blink ml-2 inline-block h-2 w-2 bg-[#ffb000] align-middle" />
+                    </p>
+                    <span
+                        className="icv-stamp text-sm md:text-base"
+                        style={{ color: config.color }}
+                    >
+                        {config.stamp}
+                    </span>
+                    <p className="mt-4 text-sm text-[#eae0cc]">{message}</p>
                 </div>
+
+                {/* Puntuación */}
                 <div className="text-right">
-                    <div className={`text-3xl font-bold ${getScoreColor()}`}>
+                    <p
+                        className="icv-display text-[clamp(2.6rem,6vw,4.5rem)] leading-none"
+                        style={{ color: scoreColor }}
+                    >
                         {score}
-                    </div>
-                    <div className="text-sm text-gray-400">de 100</div>
+                    </p>
+                    <p className="icv-label mt-1">/ 100 PUNTOS</p>
                 </div>
             </div>
 
-            {/* Feedback */}
-            <div className="mb-4">
-                <div className="text-gray-300 whitespace-pre-line space-y-3">
+            {/* Transcripción del veredicto */}
+            <div className="border-t border-[rgba(234,224,204,0.16)] pt-6">
+                <div className="space-y-3 text-[0.8rem] leading-relaxed text-[#97896d]">
                     {feedback.split("\n\n").map((paragraph, index) => {
                         // Detectar secciones con **texto** para negritas
                         const parts = paragraph.split(/(\*\*.*?\*\*)/g);
                         return (
-                            <p key={index} className="leading-relaxed">
+                            <p key={index}>
                                 {parts.map((part, i) => {
                                     if (
                                         part.startsWith("**") &&
                                         part.endsWith("**")
                                     ) {
-                                        // Texto en negrita
+                                        // Texto destacado
                                         return (
                                             <strong
                                                 key={i}
-                                                className="text-white font-semibold"
+                                                className="font-semibold text-[#eae0cc]"
                                             >
                                                 {part.slice(2, -2)}
                                             </strong>

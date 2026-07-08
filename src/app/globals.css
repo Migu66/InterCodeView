@@ -666,3 +666,721 @@ video {
 .animate-scaleIn {
     animation: scaleIn 0.3s ease-out;
 }
+
+/* ============================================================
+   ICV LANDING — "CASSETTE FUTURISM / MISSION CONTROL"
+   Carbón cálido + hueso + ámbar fósforo + rojo señal.
+   Solo transform/opacity en animaciones.
+   ============================================================ */
+
+.icv {
+    --icv-bg: #0f0c08;
+    --icv-panel: #16110a;
+    --icv-bone: #eae0cc;
+    --icv-dim: #97896d;
+    --icv-amber: #ffb000;
+    --icv-red: #ff3d00;
+    --icv-line: rgba(234, 224, 204, 0.16);
+
+    background-color: var(--icv-bg);
+    color: var(--icv-bone);
+    font-family: var(--font-mono), "IBM Plex Mono", monospace;
+}
+
+.icv ::selection {
+    background-color: var(--icv-amber);
+    color: #0f0c08;
+}
+
+/* --- Tipografía --- */
+.icv-display {
+    font-family: var(--font-display), "Michroma", sans-serif;
+    text-transform: uppercase;
+    line-height: 0.95;
+    letter-spacing: -0.01em;
+}
+
+.icv-outline {
+    color: transparent;
+    -webkit-text-stroke: 1.5px var(--icv-bone);
+}
+
+.icv-outline-amber {
+    color: transparent;
+    -webkit-text-stroke: 1.5px var(--icv-amber);
+}
+
+.icv-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--icv-dim);
+}
+
+/* --- Split text (animación letra a letra) --- */
+.icv-ch-wrap {
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: top;
+}
+
+.icv-ch {
+    display: inline-block;
+    will-change: transform;
+}
+
+/* --- Marquee --- */
+.icv-marquee {
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.icv-marquee-track {
+    display: flex;
+    width: max-content;
+    animation: icv-marquee var(--icv-marquee-dur, 30s) linear infinite;
+    will-change: transform;
+}
+
+@keyframes icv-marquee {
+    to {
+        transform: translate3d(-50%, 0, 0);
+    }
+}
+
+/* --- Parpadeos de instrumento --- */
+@keyframes icv-blink {
+    0%,
+    59% {
+        opacity: 1;
+    }
+    60%,
+    100% {
+        opacity: 0;
+    }
+}
+
+.icv-blink {
+    animation: icv-blink 1.2s steps(1) infinite;
+}
+
+@keyframes icv-flicker {
+    0%,
+    100% {
+        opacity: 1;
+    }
+    92% {
+        opacity: 1;
+    }
+    93% {
+        opacity: 0.86;
+    }
+    94% {
+        opacity: 1;
+    }
+    97% {
+        opacity: 0.93;
+    }
+}
+
+.icv-flicker {
+    animation: icv-flicker 6s linear infinite;
+}
+
+/* --- Overlay CRT: scanlines + viñeta (estático, barato) --- */
+.icv-scan {
+    position: fixed;
+    inset: 0;
+    z-index: 70;
+    pointer-events: none;
+    background-image:
+        repeating-linear-gradient(
+            0deg,
+            rgba(8, 6, 3, 0.14) 0px,
+            rgba(8, 6, 3, 0.14) 1px,
+            transparent 1px,
+            transparent 3px
+        ),
+        radial-gradient(
+            120% 120% at 50% 40%,
+            transparent 62%,
+            rgba(8, 6, 3, 0.5) 100%
+        );
+    opacity: 0.55;
+}
+
+/* --- Botones de ignición --- */
+.icv-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    border: 1px solid var(--icv-amber);
+    padding: 1.1rem 2rem;
+    font-size: 0.8rem;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--icv-amber);
+    overflow: hidden;
+    background: transparent;
+}
+
+.icv-btn__bg {
+    position: absolute;
+    inset: 0;
+    background: var(--icv-amber);
+    transform: scaleY(0);
+    transform-origin: bottom;
+    transition: transform 0.4s cubic-bezier(0.76, 0, 0.24, 1);
+    will-change: transform;
+}
+
+.icv-btn__label {
+    position: relative;
+    display: block;
+    overflow: hidden;
+}
+
+.icv-btn__label > span {
+    display: block;
+    transition:
+        transform 0.4s cubic-bezier(0.76, 0, 0.24, 1),
+        color 0.4s;
+}
+
+.icv-btn__label > span:nth-child(2) {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    color: var(--icv-bg);
+}
+
+.icv-btn:hover .icv-btn__bg,
+.icv-btn:focus-visible .icv-btn__bg {
+    transform: scaleY(1);
+}
+
+.icv-btn:hover .icv-btn__label > span,
+.icv-btn:focus-visible .icv-btn__label > span {
+    transform: translateY(-100%);
+}
+
+.icv-btn--red {
+    border-color: var(--icv-red);
+    color: var(--icv-red);
+}
+
+.icv-btn--red .icv-btn__bg {
+    background: var(--icv-red);
+}
+
+/* Enlace subrayado con barrido */
+.icv-link {
+    position: relative;
+    display: inline-block;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    color: var(--icv-dim);
+    transition: color 0.3s;
+}
+
+.icv-link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -3px;
+    width: 100%;
+    height: 1px;
+    background: var(--icv-amber);
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.35s cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+.icv-link:hover {
+    color: var(--icv-amber);
+}
+
+.icv-link:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+}
+
+/* --- Cursor retícula --- */
+@media (pointer: fine) {
+    .icv,
+    .icv a,
+    .icv button {
+        cursor: none;
+    }
+}
+
+.icv-cursor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 80;
+    pointer-events: none;
+    width: 46px;
+    height: 46px;
+    margin: -23px 0 0 -23px;
+    will-change: transform;
+}
+
+.icv-cursor__ring {
+    position: absolute;
+    inset: 0;
+    border: 1px solid var(--icv-bone);
+    border-radius: 50%;
+    opacity: 0.9;
+    transform: scale(0.45);
+    transition: transform 0.3s cubic-bezier(0.34, 1.4, 0.64, 1);
+    mix-blend-mode: difference;
+}
+
+.icv-cursor__h,
+.icv-cursor__v {
+    position: absolute;
+    background: var(--icv-amber);
+    transition:
+        transform 0.25s ease,
+        opacity 0.25s ease;
+}
+
+.icv-cursor__h {
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 1px;
+}
+
+.icv-cursor__v {
+    left: 50%;
+    top: 0;
+    width: 1px;
+    height: 100%;
+}
+
+.icv-cursor__dot {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 3px;
+    height: 3px;
+    margin: -1.5px 0 0 -1.5px;
+    background: var(--icv-red);
+    border-radius: 50%;
+}
+
+.icv-cursor__label {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 0.5rem;
+    letter-spacing: 0.2em;
+    color: var(--icv-bone);
+    mix-blend-mode: difference;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+    white-space: nowrap;
+}
+
+.icv-cursor[data-state="link"] .icv-cursor__ring {
+    transform: scale(1);
+}
+
+.icv-cursor[data-state="link"] .icv-cursor__h {
+    transform: scaleX(0.18);
+    opacity: 0;
+}
+
+.icv-cursor[data-state="link"] .icv-cursor__v {
+    transform: scaleY(0.18);
+    opacity: 0;
+}
+
+.icv-cursor[data-state="link"] .icv-cursor__label {
+    opacity: 1;
+}
+
+@media (pointer: coarse) {
+    .icv-cursor {
+        display: none;
+    }
+}
+
+/* --- Esquinas de panel (ticks) --- */
+.icv-corner {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    border-color: var(--icv-amber);
+    border-style: solid;
+    border-width: 0;
+}
+
+.icv-corner--tl {
+    top: -1px;
+    left: -1px;
+    border-top-width: 1px;
+    border-left-width: 1px;
+}
+
+.icv-corner--tr {
+    top: -1px;
+    right: -1px;
+    border-top-width: 1px;
+    border-right-width: 1px;
+}
+
+.icv-corner--bl {
+    bottom: -1px;
+    left: -1px;
+    border-bottom-width: 1px;
+    border-left-width: 1px;
+}
+
+.icv-corner--br {
+    bottom: -1px;
+    right: -1px;
+    border-bottom-width: 1px;
+    border-right-width: 1px;
+}
+
+/* --- Banco de lenguajes --- */
+.icv-lang {
+    position: relative;
+    display: inline-block;
+    color: transparent;
+    -webkit-text-stroke: 1.2px rgba(234, 224, 204, 0.55);
+    transition:
+        color 0.3s ease,
+        -webkit-text-stroke-color 0.3s ease,
+        transform 0.3s ease;
+    will-change: transform;
+}
+
+.icv-lang:hover {
+    color: var(--icv-amber);
+    -webkit-text-stroke-color: var(--icv-amber);
+    transform: translateY(-4px);
+}
+
+.icv-lang sup {
+    font-family: var(--font-mono), monospace;
+    -webkit-text-stroke: 0;
+    color: var(--icv-dim);
+    font-size: 0.55rem;
+    letter-spacing: 0.2em;
+    transition: color 0.3s;
+}
+
+.icv-lang:hover sup {
+    color: var(--icv-red);
+}
+
+/* --- Terminal de evaluación --- */
+.icv-terminal {
+    background: #120d06;
+    border: 1px solid var(--icv-line);
+    box-shadow: inset 0 0 80px rgba(255, 176, 0, 0.07);
+}
+
+/* --- Interruptor de checklist (decorativo) --- */
+.icv-switch {
+    position: relative;
+    width: 34px;
+    height: 16px;
+    border: 1px solid var(--icv-dim);
+}
+
+.icv-switch::after {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 10px;
+    height: 10px;
+    background: var(--icv-dim);
+    transition:
+        transform 0.3s cubic-bezier(0.76, 0, 0.24, 1),
+        background-color 0.3s;
+}
+
+.icv-switch.is-on::after {
+    transform: translateX(18px);
+    background: var(--icv-amber);
+}
+
+/* --- Paneles de instrumentos --- */
+.icv-panel {
+    position: relative;
+    background: var(--icv-panel);
+    border: 1px solid var(--icv-line);
+}
+
+/* --- Formularios de consola --- */
+.icv-input {
+    width: 100%;
+    background: rgba(15, 12, 8, 0.6);
+    border: 1px solid var(--icv-line);
+    border-radius: 0;
+    padding: 0.85rem 1rem;
+    font-family: var(--font-mono), "IBM Plex Mono", monospace;
+    font-size: 0.85rem;
+    letter-spacing: 0.06em;
+    color: var(--icv-bone);
+    transition:
+        border-color 0.3s,
+        background-color 0.3s;
+}
+
+.icv-input::placeholder {
+    color: rgba(151, 137, 109, 0.5);
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.14em;
+}
+
+.icv-input:focus {
+    outline: none;
+    border-color: var(--icv-amber);
+    background: var(--icv-panel);
+}
+
+.icv-input:disabled {
+    opacity: 0.45;
+}
+
+.icv-input--error,
+.icv-input--error:focus {
+    border-color: var(--icv-red);
+}
+
+/* Casilla cuadrada de checklist */
+.icv-check {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    border: 1px solid var(--icv-dim);
+    background: transparent;
+    transition:
+        background-color 0.25s,
+        border-color 0.25s;
+}
+
+.icv-check:checked {
+    border-color: var(--icv-amber);
+    background: var(--icv-amber);
+    box-shadow: inset 0 0 0 3px var(--icv-bg);
+}
+
+/* --- Scrollbar de instrumento --- */
+.icv-scroll::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.icv-scroll::-webkit-scrollbar-track {
+    background: #120d06;
+}
+
+.icv-scroll::-webkit-scrollbar-thumb {
+    background: #3a2f1c;
+}
+
+.icv-scroll::-webkit-scrollbar-thumb:hover {
+    background: var(--icv-amber);
+}
+
+/* --- Losetas del banco de módulos --- */
+.icv-tile {
+    position: relative;
+    display: block;
+    width: 100%;
+    text-align: left;
+    border: 1px solid var(--icv-line);
+    background: transparent;
+    transition:
+        background-color 0.3s,
+        border-color 0.3s;
+}
+
+.icv-tile:hover,
+.icv-tile:focus-visible {
+    background: var(--icv-panel);
+    border-color: rgba(255, 176, 0, 0.55);
+}
+
+.icv-tile__code {
+    font-family: var(--font-display), "Michroma", sans-serif;
+    text-transform: uppercase;
+    line-height: 0.95;
+    color: transparent;
+    -webkit-text-stroke: 1.5px rgba(234, 224, 204, 0.5);
+    transition:
+        color 0.3s ease,
+        -webkit-text-stroke-color 0.3s ease,
+        transform 0.3s ease;
+    will-change: transform;
+}
+
+.icv-tile:hover .icv-tile__code,
+.icv-tile:focus-visible .icv-tile__code {
+    color: var(--icv-amber);
+    -webkit-text-stroke-color: var(--icv-amber);
+    transform: translateY(-4px);
+}
+
+.icv-tile__arrow {
+    color: var(--icv-amber);
+    opacity: 0;
+    transform: translateX(-8px);
+    transition:
+        opacity 0.3s,
+        transform 0.3s;
+}
+
+.icv-tile:hover .icv-tile__arrow,
+.icv-tile:focus-visible .icv-tile__arrow {
+    opacity: 1;
+    transform: none;
+}
+
+/* --- Filas del manifiesto de ejercicios --- */
+.icv-mrow {
+    transition: background-color 0.25s;
+}
+
+.icv-mrow:hover {
+    background: rgba(255, 176, 0, 0.05);
+}
+
+/* --- Sello de goma --- */
+.icv-stamp {
+    display: inline-block;
+    border: 2px solid currentColor;
+    padding: 0.3rem 0.9rem;
+    font-family: var(--font-display), "Michroma", sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    transform: rotate(-6deg);
+}
+
+/* --- Markdown del enunciado (plan de vuelo) --- */
+.icv-md {
+    color: var(--icv-bone);
+    font-size: 0.85rem;
+    line-height: 1.8;
+}
+
+.icv-md h1,
+.icv-md h2 {
+    font-family: var(--font-display), "Michroma", sans-serif;
+    text-transform: uppercase;
+    color: var(--icv-amber);
+    font-size: 0.95rem;
+    letter-spacing: 0.06em;
+    margin: 1.75rem 0 0.9rem;
+}
+
+.icv-md h3,
+.icv-md h4 {
+    color: var(--icv-amber);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-size: 0.75rem;
+    margin: 1.5rem 0 0.75rem;
+}
+
+.icv-md p {
+    margin-bottom: 1rem;
+}
+
+.icv-md code {
+    background: #120d06;
+    border: 1px solid var(--icv-line);
+    color: var(--icv-amber);
+    padding: 0.1rem 0.4rem;
+    font-size: 0.8rem;
+}
+
+.icv-md pre {
+    background: #120d06;
+    border: 1px solid var(--icv-line);
+    padding: 1rem;
+    overflow-x: auto;
+    margin: 1rem 0;
+}
+
+.icv-md pre code {
+    background: transparent;
+    border: 0;
+    padding: 0;
+    color: var(--icv-bone);
+}
+
+.icv-md ul,
+.icv-md ol {
+    padding-left: 1.1rem;
+    margin-bottom: 1rem;
+}
+
+.icv-md ul {
+    list-style: none;
+}
+
+.icv-md ul li::before {
+    content: "▪";
+    color: var(--icv-amber);
+    margin-right: 0.6rem;
+}
+
+.icv-md li {
+    margin-bottom: 0.45rem;
+}
+
+.icv-md strong {
+    color: #fff8ea;
+}
+
+.icv-md blockquote {
+    border-left: 2px solid var(--icv-amber);
+    padding-left: 1rem;
+    color: var(--icv-dim);
+    margin: 1rem 0;
+}
+
+.icv-md table {
+    border-collapse: collapse;
+    margin: 1rem 0;
+    width: 100%;
+}
+
+.icv-md th,
+.icv-md td {
+    border: 1px solid var(--icv-line);
+    padding: 0.4rem 0.75rem;
+    text-align: left;
+    font-size: 0.8rem;
+}
+
+.icv-md th {
+    color: var(--icv-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-size: 0.65rem;
+}
+
+/* --- Accesibilidad: sin movimiento --- */
+@media (prefers-reduced-motion: reduce) {
+    .icv-marquee-track,
+    .icv-blink,
+    .icv-flicker {
+        animation: none;
+    }
+}

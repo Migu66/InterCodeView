@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Michroma, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 import { ToastContainer } from "@/components/ui/Toast";
 import { AuthProvider } from "@/contexts/AuthContext";
@@ -11,6 +11,22 @@ const inter = Inter({
     display: "swap",
     preload: true,
     variable: "--font-inter",
+});
+
+// Fuentes de la landing (dirección "cassette futurism"):
+// Michroma = display aeroespacial, IBM Plex Mono = datos/cuerpo
+const michroma = Michroma({
+    weight: "400",
+    subsets: ["latin"],
+    display: "swap",
+    variable: "--font-display",
+});
+
+const plexMono = IBM_Plex_Mono({
+    weight: ["400", "500", "600"],
+    subsets: ["latin"],
+    display: "swap",
+    variable: "--font-mono",
 });
 
 export const metadata: Metadata = {
@@ -88,7 +104,10 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="es" className={inter.variable}>
+        <html
+            lang="es"
+            className={`${inter.variable} ${michroma.variable} ${plexMono.variable}`}
+        >
             <body className={inter.className}>
                 <SessionProviderWrapper>
                     <AuthProvider>

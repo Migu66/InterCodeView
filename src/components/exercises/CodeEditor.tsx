@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { useState } from "react";
-import { FiCode, FiMaximize2, FiMinimize2, FiPlay } from "react-icons/fi";
+import type { Monaco } from "@monaco-editor/react";
 
 // Lazy load del editor con loading fallback
 const Editor = dynamic(
@@ -11,11 +11,10 @@ const Editor = dynamic(
     {
         ssr: false,
         loading: () => (
-            <div className="flex items-center justify-center h-full bg-[#1e1e1e]">
-                <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#00ff9d] mx-auto mb-3"></div>
-                    <p className="text-gray-400 text-sm">Cargando editor...</p>
-                </div>
+            <div className="flex h-full items-center justify-center bg-[#120d06]">
+                <p className="icv-label icv-blink !text-[#ffb000]">
+                    ▮ CARGANDO EDITOR
+                </p>
             </div>
         ),
     }
@@ -37,6 +36,34 @@ const languageMap: { [key: string]: string } = {
     java: "java",
     cpp: "cpp",
     csharp: "csharp",
+};
+
+// Tema fósforo: fondo carbón, cursor y palabras clave en ámbar
+const defineIcvTheme = (monaco: Monaco) => {
+    monaco.editor.defineTheme("icv-phosphor", {
+        base: "vs-dark",
+        inherit: true,
+        rules: [
+            { token: "comment", foreground: "6f6350", fontStyle: "italic" },
+            { token: "keyword", foreground: "ffb000" },
+            { token: "string", foreground: "d8c9a3" },
+            { token: "number", foreground: "ff8f5a" },
+            { token: "type", foreground: "eae0cc" },
+        ],
+        colors: {
+            "editor.background": "#120d06",
+            "editor.foreground": "#eae0cc",
+            "editor.lineHighlightBackground": "#16110a",
+            "editorLineNumber.foreground": "#5d5240",
+            "editorLineNumber.activeForeground": "#ffb000",
+            "editorCursor.foreground": "#ffb000",
+            "editor.selectionBackground": "#ffb00033",
+            "editorIndentGuide.background": "#2a2214",
+            "editorWidget.background": "#16110a",
+            "editorSuggestWidget.background": "#16110a",
+            "editorSuggestWidget.selectedBackground": "#2a2214",
+        },
+    });
 };
 
 export default function CodeEditor({
@@ -61,14 +88,17 @@ export default function CodeEditor({
 
     return (
         <div
-            className={`flex flex-col transition-all duration-300 ${isFullscreen ? "fixed inset-0 z-50 bg-black" : `${editorHeight} min-h-[400px]`}`}
+            className={`flex flex-col transition-all duration-300 ${isFullscreen ? "fixed inset-0 z-[60] bg-[#0f0c08]" : `${editorHeight} min-h-[400px]`}`}
         >
-            {/* Editor Header */}
-            <div className="bg-[#1e1e1e] border border-gray-800 rounded-t-lg px-4 py-3 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                    <FiCode className="text-[#00ff9d]" size={20} />
-                    <span className="text-sm font-semibold text-gray-300">
-                        Editor de Código
+            {/* Cabecera del editor */}
+            <div className="flex items-center justify-between border border-[rgba(234,224,204,0.16)] bg-[#16110a] px-4 py-3">
+                <div className="flex items-center gap-3">
+                    <span className="icv-blink h-2 w-2 bg-[#ffb000]" />
+                    <span className="icv-label !text-[#eae0cc]">
+                        EDITOR — CABINA
+                    </span>
+                    <span className="icv-label hidden sm:inline">
+                        / {monacoLanguage.toUpperCase()}
                     </span>
                 </div>
                 <div className="flex items-center gap-2">
@@ -76,58 +106,48 @@ export default function CodeEditor({
                         <button
                             onClick={onRun}
                             disabled={isRunning}
-                            className="flex items-center gap-2 px-4 py-2 bg-[#00ff9d] text-black rounded-lg font-semibold hover:bg-[#00cc7d] transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                            data-cursor-label="EJECUTAR"
+                            className="border border-[#ffb000] px-4 py-2 text-[0.6rem] tracking-[0.22em] text-[#ffb000] transition-colors duration-300 hover:bg-[#ffb000] hover:text-[#0f0c08] disabled:pointer-events-none disabled:opacity-40"
                             title="Ejecutar código"
                         >
                             {isRunning ? (
-                                <>
-                                    <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-black"></div>
-                                    <span>Ejecutando...</span>
-                                </>
+                                <span className="icv-blink">
+                                    ▮ EJECUTANDO…
+                                </span>
                             ) : (
-                                <>
-                                    <FiPlay
-                                        size={16}
-                                        className="cursor-pointer"
-                                    />
-                                    <span className="cursor-pointer">
-                                        Ejecutar Código
-                                    </span>
-                                </>
+                                <>EJECUTAR ▶</>
                             )}
                         </button>
                     )}
                     <button
                         onClick={toggleFullscreen}
-                        className="p-2 hover:bg-gray-800 rounded transition-colors text-gray-400 hover:text-[#00ff9d] cursor-pointer"
+                        data-cursor-label="VISTA"
+                        className="px-3 py-2 text-[0.6rem] tracking-[0.22em] text-[#97896d] transition-colors duration-300 hover:text-[#ffb000]"
                         title={
                             isFullscreen
                                 ? "Salir de pantalla completa"
                                 : "Pantalla completa"
                         }
                     >
-                        {isFullscreen ? (
-                            <FiMinimize2 size={18} />
-                        ) : (
-                            <FiMaximize2 size={18} />
-                        )}
+                        {isFullscreen ? "[REDUCIR]" : "[AMPLIAR]"}
                     </button>
                 </div>
             </div>
 
             {/* Monaco Editor */}
-            <div className="flex-1 border-l border-r border-b border-gray-800 rounded-b-lg overflow-hidden">
+            <div className="flex-1 overflow-hidden border-x border-b border-[rgba(234,224,204,0.16)]">
                 <Editor
                     height="100%"
                     language={monacoLanguage}
                     value={value}
                     onChange={onChange}
-                    theme="vs-dark"
+                    theme="icv-phosphor"
+                    beforeMount={defineIcvTheme}
                     options={{
                         minimap: { enabled: isFullscreen },
                         fontSize: 14,
                         fontFamily:
-                            "'Fira Code', 'Cascadia Code', 'Consolas', monospace",
+                            "'IBM Plex Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace",
                         fontLigatures: true,
                         lineNumbers: "on",
                         roundedSelection: false,
@@ -188,13 +208,10 @@ export default function CodeEditor({
                         },
                     }}
                     loading={
-                        <div className="flex items-center justify-center h-full bg-[#1e1e1e]">
-                            <div className="text-center">
-                                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#00ff9d] mx-auto mb-3"></div>
-                                <p className="text-gray-400 text-sm">
-                                    Cargando editor...
-                                </p>
-                            </div>
+                        <div className="flex h-full items-center justify-center bg-[#120d06]">
+                            <p className="icv-label icv-blink !text-[#ffb000]">
+                                ▮ CARGANDO EDITOR
+                            </p>
                         </div>
                     }
                 />

@@ -1,8 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { FiCode, FiTrendingUp, FiZap } from "react-icons/fi";
-import { FaCircle } from "react-icons/fa6";
 
 interface Exercise {
     id: string;
@@ -21,30 +19,22 @@ interface ExercisesTableProps {
     accentColor?: string;
 }
 
+// Mapa de dificultad → sección y color de señal (hueso / ámbar / rojo)
 const difficultyConfig = {
     EASY: {
-        label: "Fácil",
-        icon: FaCircle,
-        color: "text-green-400",
-        bgColor: "bg-green-400/10",
-        borderColor: "border-green-400/30",
-        hoverBg: "hover:bg-green-400/5",
+        section: "A",
+        tag: "FÁCIL",
+        color: "#eae0cc",
     },
     MEDIUM: {
-        label: "Medio",
-        icon: FiTrendingUp,
-        color: "text-yellow-400",
-        bgColor: "bg-yellow-400/10",
-        borderColor: "border-yellow-400/30",
-        hoverBg: "hover:bg-yellow-400/5",
+        section: "B",
+        tag: "MEDIO",
+        color: "#ffb000",
     },
     HARD: {
-        label: "Difícil",
-        icon: FiZap,
-        color: "text-red-400",
-        bgColor: "bg-red-400/10",
-        borderColor: "border-red-400/30",
-        hoverBg: "hover:bg-red-400/5",
+        section: "C",
+        tag: "DIFÍCIL",
+        color: "#ff3d00",
     },
 };
 
@@ -54,141 +44,122 @@ export default function ExercisesTable({
     languageId,
     title,
     description,
-    accentColor = "#00ff9d",
 }: ExercisesTableProps) {
     const config = difficultyConfig[difficulty];
-    const DifficultyIcon = config.icon;
 
     if (exercises.length === 0) {
         return null;
     }
 
     return (
-        <section className="mb-16">
-            {/* Header de la sección */}
-            <div
-                className={`${config.bgColor} ${config.borderColor} border rounded-2xl p-6 mb-6`}
-            >
-                <div className="flex items-center gap-4 mb-2">
-                    <div
-                        className="w-1 h-12 rounded-full"
-                        style={{ backgroundColor: accentColor }}
-                    />
-                    <div>
-                        <div className="flex items-center gap-3">
-                            <DifficultyIcon
-                                className={`text-2xl ${config.color}`}
-                            />
-                            <h2
-                                className={`text-3xl font-bold ${config.color}`}
-                            >
-                                {title}
-                            </h2>
-                        </div>
-                        <p className="text-gray-400 mt-1 text-sm">
-                            {description} • {exercises.length}{" "}
-                            {exercises.length === 1
-                                ? "ejercicio"
-                                : "ejercicios"}
-                        </p>
-                    </div>
+        <section className="mb-20">
+            {/* Cabecera de sección con letra gigante */}
+            <div className="mb-6 flex items-end gap-6">
+                <span
+                    className="icv-display icv-outline text-[clamp(3rem,8vw,6rem)] leading-none"
+                    aria-hidden="true"
+                >
+                    {config.section}
+                </span>
+                <div className="pb-2">
+                    <h2
+                        className="icv-display text-base tracking-[0.1em] md:text-xl"
+                        style={{ color: config.color }}
+                    >
+                        SECCIÓN {config.section} — {title.toUpperCase()}
+                    </h2>
+                    <p className="icv-label mt-2">
+                        {description.toUpperCase()} ·{" "}
+                        {String(exercises.length).padStart(2, "0")}{" "}
+                        {exercises.length === 1 ? "EJERCICIO" : "EJERCICIOS"}
+                    </p>
                 </div>
             </div>
 
-            {/* Tabla de ejercicios */}
-            <div className="overflow-hidden rounded-xl border border-white/10 bg-gradient-to-br from-white/5 to-white/[0.02] backdrop-blur-sm">
-                <div className="overflow-x-auto">
-                    <table className="w-full">
-                        <thead>
-                            <tr className="border-b border-white/10 bg-white/5">
-                                <th className="text-left py-4 px-6 text-sm font-semibold text-gray-400 w-20">
-                                    #
-                                </th>
-                                <th className="text-left py-4 px-6 text-sm font-semibold text-gray-400">
-                                    Ejercicio
-                                </th>
-                                <th className="text-left py-4 px-6 text-sm font-semibold text-gray-400 hidden md:table-cell">
-                                    Descripción
-                                </th>
-                                <th className="text-left py-4 px-6 text-sm font-semibold text-gray-400 w-32">
-                                    Nivel
-                                </th>
-                                <th className="text-right py-4 px-6 text-sm font-semibold text-gray-400 w-32">
-                                    Acción
-                                </th>
+            {/* Manifiesto */}
+            <div className="overflow-x-auto border border-[rgba(234,224,204,0.16)]">
+                <table className="w-full min-w-[560px] border-collapse">
+                    <thead>
+                        <tr className="border-b border-[rgba(234,224,204,0.16)] bg-[#16110a]">
+                            <th className="icv-label w-24 px-5 py-3 text-left !text-[#97896d]">
+                                REF
+                            </th>
+                            <th className="icv-label px-5 py-3 text-left !text-[#97896d]">
+                                EJERCICIO
+                            </th>
+                            <th className="icv-label hidden px-5 py-3 text-left !text-[#97896d] lg:table-cell">
+                                DESCRIPCIÓN
+                            </th>
+                            <th className="icv-label w-32 px-5 py-3 text-left !text-[#97896d]">
+                                NIVEL
+                            </th>
+                            <th className="icv-label w-36 px-5 py-3 text-right !text-[#97896d]">
+                                ACCIÓN
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {exercises.map((exercise) => (
+                            <tr
+                                key={exercise.id}
+                                className="icv-mrow border-b border-[rgba(234,224,204,0.08)] last:border-b-0"
+                            >
+                                {/* Referencia */}
+                                <td className="px-5 py-4 align-top">
+                                    <span
+                                        className="text-[0.7rem] tracking-[0.2em]"
+                                        style={{ color: config.color }}
+                                    >
+                                        {config.section}-
+                                        {String(exercise.order).padStart(
+                                            2,
+                                            "0"
+                                        )}
+                                    </span>
+                                </td>
+
+                                {/* Título */}
+                                <td className="px-5 py-4 align-top">
+                                    <Link
+                                        href={`/languages/${languageId}/exercises/${exercise.id}`}
+                                        className="text-sm text-[#eae0cc] transition-colors duration-300 hover:text-[#ffb000]"
+                                        data-cursor-label="ABRIR"
+                                    >
+                                        {exercise.title}
+                                    </Link>
+                                </td>
+
+                                {/* Descripción (oculta en pantallas pequeñas) */}
+                                <td className="hidden px-5 py-4 align-top lg:table-cell">
+                                    <p className="line-clamp-2 max-w-md text-[0.7rem] leading-relaxed tracking-[0.04em] text-[#97896d]">
+                                        {exercise.description}
+                                    </p>
+                                </td>
+
+                                {/* Nivel */}
+                                <td className="px-5 py-4 align-top">
+                                    <span
+                                        className="text-[0.65rem] tracking-[0.2em]"
+                                        style={{ color: config.color }}
+                                    >
+                                        [{config.tag}]
+                                    </span>
+                                </td>
+
+                                {/* Acción */}
+                                <td className="px-5 py-4 text-right align-top">
+                                    <Link
+                                        href={`/languages/${languageId}/exercises/${exercise.id}`}
+                                        className="icv-link"
+                                        data-cursor-label="RESOLVER"
+                                    >
+                                        RESOLVER →
+                                    </Link>
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            {exercises.map((exercise) => (
-                                <tr
-                                    key={exercise.id}
-                                    className={`border-b border-white/5 ${config.hoverBg} transition-colors group`}
-                                >
-                                    {/* Número */}
-                                    <td className="py-4 px-6">
-                                        <div
-                                            className={`flex items-center justify-center w-8 h-8 rounded-lg ${config.bgColor} ${config.color} text-sm font-bold`}
-                                        >
-                                            {exercise.order}
-                                        </div>
-                                    </td>
-
-                                    {/* Título */}
-                                    <td className="py-4 px-6">
-                                        <Link
-                                            href={`/languages/${languageId}/exercises/${exercise.id}`}
-                                            className="block"
-                                        >
-                                            <div className="flex items-center gap-3">
-                                                <FiCode
-                                                    className={`${config.color} text-lg flex-shrink-0`}
-                                                />
-                                                <span
-                                                    className={`font-semibold text-white group-hover:${config.color} transition-colors`}
-                                                >
-                                                    {exercise.title}
-                                                </span>
-                                            </div>
-                                        </Link>
-                                    </td>
-
-                                    {/* Descripción (oculta en móvil) */}
-                                    <td className="py-4 px-6 hidden md:table-cell">
-                                        <p className="text-gray-400 text-sm line-clamp-2">
-                                            {exercise.description}
-                                        </p>
-                                    </td>
-
-                                    {/* Badge de nivel */}
-                                    <td className="py-4 px-6">
-                                        <div
-                                            className={`inline-flex items-center gap-2 px-3 py-1 rounded-full ${config.bgColor} ${config.borderColor} border`}
-                                        >
-                                            <span
-                                                className={`text-xs font-semibold ${config.color}`}
-                                            >
-                                                {config.label}
-                                            </span>
-                                        </div>
-                                    </td>
-
-                                    {/* Botón */}
-                                    <td className="py-4 px-6 text-right">
-                                        <Link
-                                            href={`/languages/${languageId}/exercises/${exercise.id}`}
-                                            className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg ${config.bgColor} ${config.borderColor} border ${config.color} hover:border-current transition-all text-sm font-medium`}
-                                        >
-                                            <span className="hidden sm:inline">
-                                                Resolver
-                                            </span>
-                                            <span className="sm:hidden">→</span>
-                                        </Link>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                        ))}
+                    </tbody>
+                </table>
             </div>
         </section>
     );

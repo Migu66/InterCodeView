@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { Camera, UserIcon } from "lucide-react";
+import Corners from "@/components/landing/Corners";
 
 interface AvatarSectionProps {
     user: {
@@ -13,6 +13,7 @@ interface AvatarSectionProps {
     isUploading: boolean;
 }
 
+// Foto de archivo del expediente: retrato cuadrado con ticks de esquina
 export default function AvatarSection({
     user,
     onAvatarChange,
@@ -32,61 +33,63 @@ export default function AvatarSection({
     };
 
     return (
-        <div className="bg-black/40 backdrop-blur-sm rounded-2xl p-8 mb-6 border-2 border-green-500/20 hover:border-green-500/40 transition-all duration-300 relative overflow-hidden group mt-10">
-            {/* Efecto de brillo en hover */}
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-green-500/5 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+        <div className="icv-panel p-6">
+            <Corners />
+            <p className="icv-label mb-6 flex items-center justify-between">
+                FOTO DE ARCHIVO
+                <span className="icv-blink h-2 w-2 bg-[#ffb000]" />
+            </p>
 
-            <div className="flex flex-col items-center relative z-10">
-                <div className="relative group/avatar">
-                    {/* Anillo animado alrededor del avatar */}
-                    <div className="absolute -inset-2 bg-gradient-to-r from-green-400 via-green-300 to-green-500 rounded-full opacity-75 blur-lg animate-pulse-slow"></div>
-
-                    <div className="relative w-40 h-40 rounded-full bg-gradient-to-br from-green-500 via-green-400 to-green-300 flex items-center justify-center overflow-hidden border-4 border-black/50 shadow-2xl shadow-green-500/50">
-                        {user?.avatarUrl ? (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img
-                                src={user.avatarUrl}
-                                alt={user.name}
-                                className="w-full h-full object-cover"
-                            />
-                        ) : (
-                            <UserIcon className="w-20 h-20 text-black" />
-                        )}
-                        {/* Overlay en hover */}
-                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover/avatar:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                            <Camera className="w-12 h-12 text-green-400" />
-                        </div>
-                    </div>
-
-                    <button
-                        onClick={() => fileInputRef.current?.click()}
-                        disabled={isUploading}
-                        className="absolute bottom-0 right-0 bg-gradient-to-r from-green-500 to-green-400 hover:from-green-400 hover:to-green-300 p-3 rounded-full transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-green-500/50 hover:scale-110 border-4 border-black cursor-pointer"
-                    >
-                        <Camera className="w-6 h-6 text-black" />
-                    </button>
-                    <input
-                        ref={fileInputRef}
-                        type="file"
-                        accept="image/*"
-                        onChange={handleFileChange}
-                        className="hidden"
+            {/* Retrato */}
+            <div className="relative mx-auto aspect-square w-full max-w-[260px] border border-[rgba(234,224,204,0.16)] bg-[#120d06]">
+                {user?.avatarUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                        src={user.avatarUrl}
+                        alt={user.name}
+                        className="h-full w-full object-cover"
                     />
-                </div>
-                <p className="mt-6 text-gray-400 text-sm font-medium">
-                    {isUploading
-                        ? "Subiendo..."
-                        : "Haz clic en el icono para cambiar tu foto"}
-                </p>
-                {user?.avatarUrl && (
-                    <button
-                        onClick={onRemoveAvatar}
-                        className="mt-3 text-red-400 hover:text-red-300 text-sm transition-colors font-medium hover:underline cursor-pointer"
-                    >
-                        Eliminar foto
-                    </button>
+                ) : (
+                    <span className="icv-display flex h-full w-full items-center justify-center text-[clamp(4rem,8vw,6rem)] text-[#ffb000]">
+                        {user?.name?.charAt(0).toUpperCase() || "?"}
+                    </span>
                 )}
+                {/* Marca de registro */}
+                <span className="icv-label absolute bottom-2 right-2 bg-[#0f0c08]/80 px-2 py-1 !text-[0.5rem]">
+                    REG. {new Date().getFullYear()}
+                </span>
             </div>
+
+            <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="hidden"
+            />
+
+            <button
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isUploading}
+                data-cursor-label="FOTO"
+                className="mt-6 w-full border border-[rgba(234,224,204,0.16)] px-4 py-3 text-[0.65rem] tracking-[0.22em] text-[#97896d] transition-colors duration-300 hover:border-[#ffb000] hover:text-[#ffb000] disabled:pointer-events-none disabled:opacity-40"
+            >
+                {isUploading ? (
+                    <span className="icv-blink">▮ TRANSMITIENDO…</span>
+                ) : (
+                    "ACTUALIZAR FOTO →"
+                )}
+            </button>
+
+            {user?.avatarUrl && (
+                <button
+                    onClick={onRemoveAvatar}
+                    data-cursor-label="BORRAR"
+                    className="mt-3 w-full px-4 py-2 text-[0.6rem] tracking-[0.22em] text-[#ff3d00] transition-opacity duration-300 hover:opacity-70"
+                >
+                    RETIRAR FOTO DEL EXPEDIENTE
+                </button>
+            )}
         </div>
     );
 }
